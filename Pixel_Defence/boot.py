@@ -16,6 +16,5 @@ Security against user opening files unwantedly'''
         gui_display.Main(root) # Runs the class in the module
         root.mainloop() # Keeps program in mainloop (callback).
 
-
 if __name__ == "__main__":
     sys.exit(App()) # Makes sure Application safely closes.

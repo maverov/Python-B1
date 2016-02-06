@@ -7,7 +7,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader
+from modules import image_loader,grid
 
 import os,sys,time,pickle,pygame
 
@@ -272,6 +272,8 @@ class Game_Window(Window): # Inherits class Window.
         self.photo = ImageTk.PhotoImage(self.photo)
         
         self.game_canvas.create_image(0,0,image=self.photo,anchor=NW)
+
+        self.game_grid = grid.Grid(self.game_canvas)
 
         # -- Game_Option Frame -- #
         message_health = "Health: "+str(self.health)

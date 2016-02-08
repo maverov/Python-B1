@@ -7,7 +7,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader,grid
+from modules import image_loader,grid,sort_algorithms
 
 import os,sys,time,pickle,pygame
 
@@ -31,6 +31,7 @@ class Window:
         self.parent.wm_iconbitmap("./images/logo.ico") # Changes the icon of Tkinter window (removes feather).
         self.parent.geometry("%dx%d+%d+%d" % (self.size[0],self.size[1],self.x,self.y)) # Sets resolution to tuple.
         self.parent.resizable(0,0) # Prevents window from resizing.
+        self.current_settings = pickle.load(open("./modules/settings.pixel","rb"))
     
     def imageList(self):
         self.images = image_loader.Images()
@@ -52,8 +53,8 @@ class Main(Window): # Inherits class Window.
 
         self.imageList()
 
-        pygame.mixer.music.stop()# Cancels all current sounds being played
         pygame.mixer.music.load("./audio/bgm/jelly_castle_retro_remix.wav")# Starts song in first parameter.
+        pygame.mixer.music.set_volume(self.current_settings[2]/100)
         pygame.mixer.music.play(-1)
 
         self.frame = Frame(self.parent,bg="#666666") # Generates a frame to store widgets.
@@ -123,11 +124,9 @@ class Options(Window): # Inherits class Window.
 
         self.parent.bind("<Escape>",self.main_menu) # Binds the Escape key on the parent window to method main_menu.
 
-        current_settings = pickle.load(open("./modules/settings.pixel","rb"))
-
         self._map = StringVar(self.parent)
         find_maps = self.find_files("./images/maps")
-        self._map.set(current_settings[0])
+        self._map.set(self.current_settings[0])
         
         # --- Widgets for Options interface. --- #
         self.main_frame = Frame(self.parent,bg="#666666")
@@ -175,7 +174,7 @@ class Options(Window): # Inherits class Window.
         self.audio_scale = Scale(self.frame03,from_=0,to=100,orient=HORIZONTAL,font=("Fixedsys",18),
                                  bg="#666666",fg="white")
         self.audio_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
-        self.audio_scale.set(current_settings[2])
+        self.audio_scale.set(self.current_settings[2])
 
         self.submit = Button(self.frame04,text="Submit",font=("Fixedsys",18),
                              command=self.submitted)
@@ -185,7 +184,7 @@ class Options(Window): # Inherits class Window.
                              command=self.cancel)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-        self.setting_difficulty(current_settings[1])
+        self.setting_difficulty(self.current_settings[1])
 
     def find_files(self,directory):
         files = []
@@ -212,6 +211,7 @@ class Options(Window): # Inherits class Window.
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
         setting_data = [self._map.get(),self.difficulty,self.audio_scale.get()]
+        pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
         self.main_menu()
@@ -239,7 +239,6 @@ class Game_Window(Window): # Inherits class Window.
         Window.__init__(self,parent) # Inherets the attributes and methods from class Window
 
         self.imageList()
-        current_settings = pickle.load(open("./modules/settings.pixel","rb"))
 
         self.health = 100
         self.money = 1000
@@ -247,6 +246,7 @@ class Game_Window(Window): # Inherits class Window.
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
+        pygame.mixer.music.set_volume(self.current_settings[2]/100)
         pygame.mixer.music.play(-1)
         
         self.main = main # Remebers frame binded to class so that it can be later restored.
@@ -267,13 +267,11 @@ class Game_Window(Window): # Inherits class Window.
         self.game_canvas = Canvas(self.display, bg="green")
         self.game_canvas.pack(fill=BOTH,expand=True,padx=5,pady=5)
 
-        self.photo = Image.open("./images/maps/"+current_settings[0])
+        self.photo = Image.open("./images/maps/"+self.current_settings[0])
         self.photo = self.photo.resize((700,600),Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.photo)
         
         self.game_canvas.create_image(0,0,image=self.photo,anchor=NW)
-
-        self.game_grid = grid.Grid(self.game_canvas)
 
         # -- Game_Option Frame -- #
         message_health = "Health: "+str(self.health)
@@ -305,11 +303,28 @@ class Game_Window(Window): # Inherits class Window.
         self.sort_canvas = Canvas(self.frame, width=190, bg="green")
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas)
+
+        self.seperator = ttk.Separator(self.frame).pack(fill=X)
+
+        self.bubble_sort = Button(self.frame, text="Bubble Sort", font=("Fixedsys",14),
+                                  command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
+        self.bubble_sort.pack(fill=X,padx=5,pady=5)
+
+        self.quick_sort = Button(self.frame, text="Quick Sort", font=("Fixedsys",14),
+                                 command=lambda: self.quick())
+        self.quick_sort.pack(fill=X,padx=5,pady=5)
+
+    def bubble(self, canvas, sort_grid):
+        sort_algorithms.BubbleSort(canvas,sort_grid)
+
+    def quick(self):
+        sort_algorithms.QuickSort()
+
     def round_end(self):
         pygame.mixer.Sound.play(button_accept)
 
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
-        print(data)
         
         image = ImageGrab.grab().crop((data[0]+3,data[1],data[0]+900,data[1]+627))
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
@@ -326,7 +341,9 @@ class Game_Window(Window): # Inherits class Window.
         pygame.mixer.Sound.play(button_deny)
         pygame.mixer.music.stop()# Cancels all current sounds being played
         pygame.mixer.music.load("./audio/bgm/jelly_castle_retro_remix.wav")# Starts song in first parameter.
+        pygame.mixer.music.set_volume(self.current_settings[2]/100)
         pygame.mixer.music.play(-1)
+        
         self.main_frame.destroy()
         self.parent.unbind("<Escape>")
         self.main.pack()

@@ -1,0 +1,12 @@
+Towers:
+  ~ ID
+  ~ Name
+  ~ Power
+  ~ Range
+  ~ Fire Rate
+  
+Mobs
+  ~ ID
+  ~ Name
+  ~ Speed
+  ~ Health

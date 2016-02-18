@@ -7,7 +7,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader,grid,sort_algorithms
+from modules import image_loader,grid,sort_algorithms,search_algorithms
 
 import os,sys,time,pickle,pygame
 
@@ -199,18 +199,26 @@ class Options(Window): # Inherits class Window.
             self.easy.config(bg="light green")
             self.normal.config(bg="yellow")
             self.hard.config(bg="red")
+
+            self.n_barricades = 50
+            
         elif difficulty == "normal":
             self.easy.config(bg="green")
             self.normal.config(bg="light goldenrod")
             self.hard.config(bg="red")
+
+            self.n_barricades = 30
+            
         else:
             self.easy.config(bg="green")
             self.normal.config(bg="yellow")
             self.hard.config(bg="tomato")
 
+            self.n_barricades = 10
+
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get()]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -287,7 +295,7 @@ class Game_Window(Window): # Inherits class Window.
         self.seperator = ttk.Separator(self.frame).pack(fill=X)
                                                         
         self.round_button = Button(self.frame, text="Start Wave "+str(self.wave), font=("Fixedsys",14),
-                              command=lambda: self.round_end())
+                              command=lambda: self.wave_start())
         self.round_button.pack(fill=X,padx=5,pady=5)
 
         self.stats = Button(self.frame, text="Game Stats", font=("Fixedsys",14),
@@ -300,10 +308,10 @@ class Game_Window(Window): # Inherits class Window.
 
         self.seperator = ttk.Separator(self.frame).pack(fill=X)
 
-        self.sort_canvas = Canvas(self.frame, width=190, bg="green")
+        self.sort_canvas = Canvas(self.frame, width=190)
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
-        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas)
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
 
         self.seperator = ttk.Separator(self.frame).pack(fill=X)
 
@@ -321,7 +329,11 @@ class Game_Window(Window): # Inherits class Window.
     def quick(self):
         sort_algorithms.QuickSort()
 
-    def round_end(self):
+    def wave_start(self):
+        mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        self.wave_end()
+
+    def wave_end(self):
         pygame.mixer.Sound.play(button_accept)
 
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
@@ -398,6 +410,3 @@ if __name__ == "__main__":
     # --- Tests above code if run --- #
     # - WARNING: The code below won't run as it is designed for security - #
     pass
-##    root = Tk()
-##    Main(root)
-##    root.mainloop()

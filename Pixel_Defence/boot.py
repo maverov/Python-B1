@@ -1,5 +1,6 @@
 __author__ = "William Read"
 __revision__ = "01/02/2016"
+__version__ = "1.0"
 
 from tkinter.ttk import *
 from tkinter import *

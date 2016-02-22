@@ -9,7 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms
 
-import os,sys,time,pickle,pygame
+import os,sys,time,pickle,pygame,threading
 
 pygame.init()
 button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
@@ -60,10 +60,14 @@ class Main(Window): # Inherits class Window.
         self.frame = Frame(self.parent,bg="#666666") # Generates a frame to store widgets.
         self.frame.pack()
 
-        # --- Widgets for Main interface. --- #        
-        self.title_banner = Label(self.frame, text="PIXEL TD", font=("Fixedsys",36),
+        # --- Widgets for Main interface. --- #
+        self.title_banner_image = Image.open("./images/misc/logo.jpg")
+        self.title_banner_image = self.title_banner_image.resize((600,300),Image.ANTIALIAS)
+        self.title_banner_image  = ImageTk.PhotoImage(self.title_banner_image)
+        
+        self.title_banner = Label(self.frame, image=self.title_banner_image, font=("Fixedsys",36),
                                   bg="#666666",fg="white")
-        self.title_banner.pack(pady=100)
+        self.title_banner.pack(pady=10)
 
         self.game = Button(self.frame, text="Play", font=("Fixedsys",18),bg="green",#relief=FLAT,
                            command=lambda: Game_Window(self.parent,self.frame))
@@ -269,6 +273,15 @@ class Game_Window(Window): # Inherits class Window.
         self.frame = Frame(self.main_frame,bg="#666666",relief=RIDGE)
         self.frame.pack(fill=Y, side=RIGHT)
 
+        self.round_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.round_data.pack(fill=BOTH)
+
+        self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.sort_data.pack(fill=BOTH)
+
+        self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.button_data.pack(fill=BOTH)
+
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
 
@@ -283,43 +296,43 @@ class Game_Window(Window): # Inherits class Window.
 
         # -- Game_Option Frame -- #
         message_health = "Health: "+str(self.health)
-        self.health_label = Label(self.frame,text=message_health,font=("Fixedsys",14),
+        self.health_label = Label(self.round_data,text=message_health,font=("Fixedsys",14),
                                   bg="#666666",fg="white")
         self.health_label.pack(fill=X)
 
         message_money = "Money: "+str(self.money)
-        self.money_label = Label(self.frame,text=message_money,font=("Fixedsys",14),
+        self.money_label = Label(self.round_data,text=message_money,font=("Fixedsys",14),
                                  bg="#666666",fg="white")
         self.money_label.pack(fill=X)
 
-        self.seperator = ttk.Separator(self.frame).pack(fill=X)
+        self.seperator = ttk.Separator(self.round_data).pack(fill=X)
                                                         
-        self.round_button = Button(self.frame, text="Start Wave "+str(self.wave), font=("Fixedsys",14),
+        self.round_button = Button(self.round_data, text="Start Wave "+str(self.wave), font=("Fixedsys",14),
                               command=lambda: self.wave_start())
         self.round_button.pack(fill=X,padx=5,pady=5)
 
-        self.stats = Button(self.frame, text="Game Stats", font=("Fixedsys",14),
+        self.stats = Button(self.round_data, text="Game Stats", font=("Fixedsys",14),
                               command=lambda: Game_Overlay())
         self.stats.pack(fill=X,padx=5,pady=5)
 
-        self.main_menu_button = Button(self.frame, text="Main Menu", font=("Fixedsys",14),
+        self.main_menu_button = Button(self.round_data, text="Main Menu", font=("Fixedsys",14),
                               command=lambda: self.main_menu())
         self.main_menu_button.pack(fill=X,padx=5,pady=5)
 
-        self.seperator = ttk.Separator(self.frame).pack(fill=X)
+        self.seperator = ttk.Separator(self.round_data).pack(fill=X)
 
-        self.sort_canvas = Canvas(self.frame, width=190)
+        self.sort_canvas = Canvas(self.sort_data, width=190, height=355)
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
         self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
 
-        self.seperator = ttk.Separator(self.frame).pack(fill=X)
+        self.seperator = ttk.Separator(self.sort_data).pack(fill=X)
 
-        self.bubble_sort = Button(self.frame, text="Bubble Sort", font=("Fixedsys",14),
+        self.bubble_sort = Button(self.button_data, text="Bubble Sort", font=("Fixedsys",14),
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
         self.bubble_sort.pack(fill=X,padx=5,pady=5)
 
-        self.quick_sort = Button(self.frame, text="Quick Sort", font=("Fixedsys",14),
+        self.quick_sort = Button(self.button_data, text="Quick Sort", font=("Fixedsys",14),
                                  command=lambda: self.quick())
         self.quick_sort.pack(fill=X,padx=5,pady=5)
 
@@ -329,8 +342,26 @@ class Game_Window(Window): # Inherits class Window.
     def quick(self):
         sort_algorithms.QuickSort()
 
+    def move_mob(self,event=None):
+        self.path = self.mob_move_route.path
+        print(self.path)
+        for each in self.path:
+            print(each)
+            colour = self.game_canvas.itemcget(self.game_grid.main_grid[(each[1],each[0])],"fill")
+            if  colour == "blue" or colour == "red":
+                pass
+            else:
+                self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
+                self.game_canvas.update_idletasks()
+                time.sleep(0.5)
+
     def wave_start(self):
-        mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        self.move_mob()
+##        mob_movement_thread = threading.Thread(target=self.move_mob,args=(self,))
+##        mob_movement_thread.start()
+##        mob_movement_thread.join()
+
         self.wave_end()
 
     def wave_end(self):

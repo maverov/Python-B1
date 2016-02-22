@@ -1,8 +1,8 @@
-__author__ = "William Read"
+__author__ = "William Read, Tom Starling"
 __revision__ = "17/02/2016"
 __version__ = "1.0"
 
-### -- Not For Final Submission -- ###
+
 import numpy
 from heapq import *
 
@@ -39,20 +39,14 @@ class Search_Path(Generate_Graph):
 
     def __init__(self, canvas, tiles):
         Generate_Graph.__init__(self,canvas,tiles)
-        path = self.A_Star()
+        self.path = self.A_Star()
         for each in tiles:
             colour = self.canvas.itemcget(self.tiles[(each[0],each[1])],"fill")
             if colour == "red" or colour == "blue" or colour == "brown":
                 pass
             else:
                 self.canvas.itemconfig(self.tiles[(each[0],each[1])],fill="")
-
-        for each in path:
-            colour = self.canvas.itemcget(self.tiles[(each[1],each[0])],"fill")
-            if colour == "red" or colour == "blue":
-                pass
-            else:
-                self.canvas.itemconfig(self.tiles[(each[1],each[0])],fill="black")
+                
 
     def A_Star(self):
         neighbours = [(0,1),(0,-1),(1,0),(-1,0)]

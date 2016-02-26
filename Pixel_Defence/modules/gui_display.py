@@ -272,8 +272,8 @@ class Game_Window(Window): # Inherits class Window.
             #self.money = 1000
             #self.wave = 1
         #else:
-            self.health = 999999999
-            self.money = 999999999
+            self.health = 1000
+            self.money = 100
             self.wave = 1
         ##End
 

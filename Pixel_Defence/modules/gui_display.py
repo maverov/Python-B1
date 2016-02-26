@@ -272,9 +272,9 @@ class Game_Window(Window): # Inherits class Window.
             #self.money = 1000
             #self.wave = 1
         #else:
-            self.health = 999999999
-            self.money = 999999999
-            self.wave = 1
+        self.health = 999999999
+        self.money = 999999999
+        self.wave = 1
         ##End
 
         pygame.mixer.music.stop() # Cancels all music currently playing.

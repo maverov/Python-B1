@@ -137,16 +137,19 @@ class Options(Window): # Inherits class Window.
         self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
     
         self.frame01 = Frame(self.main_frame,bg="#666666")
-        self.frame01.pack(fill=BOTH,pady=50)
+        self.frame01.pack(fill=BOTH,pady=30)
 
         self.frame02 = Frame(self.main_frame,bg="#666666")
-        self.frame02.pack(fill=BOTH,pady=50)
+        self.frame02.pack(fill=BOTH,pady=30)
 
         self.frame03 = Frame(self.main_frame,bg="#666666")
-        self.frame03.pack(fill=BOTH,pady=50)
+        self.frame03.pack(fill=BOTH,pady=30)
 
         self.frame04 = Frame(self.main_frame,bg="#666666")
-        self.frame04.pack(side=BOTTOM,fill=BOTH,pady=10)
+        self.frame04.pack(fill=BOTH,pady=30)
+        
+        self.frame05 = Frame(self.main_frame,bg="#666666")
+        self.frame05.pack(side=BOTTOM,fill=BOTH,pady=10)
 
         self.difficulty = Label(self.frame01, text="Difficulty: ",font=("Fixedsys",18),bg="#666666",fg="white")
         self.difficulty.pack(side=LEFT, padx=10,pady=5)
@@ -180,15 +183,25 @@ class Options(Window): # Inherits class Window.
         self.audio_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
         self.audio_scale.set(self.current_settings[2])
 
-        self.submit = Button(self.frame04,text="Submit",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Submit",font=("Fixedsys",18),
                              command=self.submitted)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-        self.submit = Button(self.frame04,text="Cancel",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Cancel",font=("Fixedsys",18),
                              command=self.cancel)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
         self.setting_difficulty(self.current_settings[1])
+
+        ## Thomas Starling Addition Start
+        self.cheat_option = IntVar()
+        self.cheat_option.set(0)
+        self.maps = Label(self.frame04, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
+        self.maps.pack(side=LEFT,fill=X,padx=10)
+        
+        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red", variable=self.cheat_option)
+        self.cheat_button.pack(side=LEFT,fill=X,padx=10)
+        ## End
 
     def find_files(self,directory):
         files = []
@@ -222,7 +235,7 @@ class Options(Window): # Inherits class Window.
 
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades, self.cheat_option.get()]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -252,9 +265,17 @@ class Game_Window(Window): # Inherits class Window.
 
         self.imageList()
 
-        self.health = 100
-        self.money = 1000
-        self.wave = 1
+        ## Cheat Statment
+        ## Need to finish ##
+        if self.cheat_option.get() == 0:
+            self.health = 100
+            self.money = 1000
+            self.wave = 1
+        else:
+            self.health = 999999999
+            self.money = 999999999
+            self.wave = 1
+        ## End
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.

@@ -266,16 +266,16 @@ class Game_Window(Window): # Inherits class Window.
         self.imageList()
 
         ## Cheat Statment
-        ## Need to finish ##
-        if self.cheat_option.get() == 0:
-            self.health = 100
-            self.money = 1000
-            self.wave = 1
-        else:
+        ##Need to finish ##
+        #if self.cheat_option.get() == 0:
+            #self.health = 100
+            #self.money = 1000
+            #self.wave = 1
+        #else:
             self.health = 999999999
             self.money = 999999999
             self.wave = 1
-        ## End
+        ##End
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.

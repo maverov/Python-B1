@@ -2,7 +2,7 @@
 
 Python Virtual Robot, ALL Project Semester 2
 
-Our Project is Tower Defence Game developed for use within the programming language of Python. This project uses a wide range of internal and external modules, complete in the programming language Python. 
+Our Project is Tower Defence Game developed for use within the programming language of Python. This project uses a wide range of internal and external modules.
 
 ##The Team:
 •	William Read (Project Manager)

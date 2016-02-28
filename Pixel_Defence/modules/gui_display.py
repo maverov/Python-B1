@@ -252,6 +252,11 @@ class Game_Window(Window): # Inherits class Window.
 
         for file in os.listdir("./images/game_waves"):
             os.remove("./images/game_waves/"+file)
+
+        if os.path.isfile("./modules/wave_settings.pixel"): # Check is file exsists
+            os.remove("./modules/wave_settings.pixel") #Remove wave_settings file
+        else:
+            wave_data = open("./modules/wave_settings.pixel","w") # Create file
         
         Window.__init__(self,parent) # Inherets the attributes and methods from class Window
 
@@ -378,9 +383,9 @@ class Game_Window(Window): # Inherits class Window.
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
         wave_info = [self.wave,self.health,self.money]
-        wave_data = open("./modules/wave_settings.pixel","wb")
-        pickle.dump(wave_info,wave_data)
-
+        wave_data = open("./modules/wave_settings.pixel","a")
+        wave_data.write(str(wave_info))
+        
         self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
 
@@ -442,6 +447,14 @@ class Game_Overlay:
 
     def __init__(self):
         '''Displays toplevel widget displaying user scores.'''
+
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+
+        for line in wave_data:
+            wave_info.append(line)
+            #print(wave_info)
+        
         if Game_Overlay.__instance > 0: # Prevents more than one overlay opening at anytime.
             pass
         else:

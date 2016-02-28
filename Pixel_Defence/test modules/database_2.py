@@ -12,7 +12,7 @@ class Turret_Data:
         self.cur.execute("CREATE TABLE IF NOT EXISTS turrets(ID INTEGER, Name TEXT, Power INTEGER, Range REAL, FireRate REAL)")
 
     def create_turret(self, ID, Name, Power, Range, FireRate):
-        self.cur.execute("INSERT INTO turrets VALUES(?,?,?,?)",(ID,Name,Power,Range,FireRate))
+        self.cur.execute("INSERT INTO turrets VALUES(?,?,?,?,?)",(ID,Name,Power,Range,FireRate))
 
     def query_turret(self, ID):
         self.cur.execute("SELECT * FROM turrets WHERE ID=?",(ID,))
@@ -30,8 +30,7 @@ class Mob_Data:
         self.cur.execute("CREATE TABLE IF NOT EXISTS mobs(ID INTEGER, Name TEXT, Speed REAL, Health INTEGER)")
 
     def create_mob(self,ID,Name,Speed,Health):
-        self.cur.execute("SELECT * FROM mobs WHERE ID=?",(ID,))
-        self.data = self.cur.fetchall()
+        self.cur.execute("INSERT INTO turrets VALUES(?,?,?,?)",(ID,Name,Speed,Health))
 
     def query_mob(self, ID):
         self.cur.execute("SELECT * FROM turrets WHERE ID=?",(ID,))

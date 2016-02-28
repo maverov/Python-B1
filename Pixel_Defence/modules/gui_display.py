@@ -17,6 +17,7 @@ pygame.init()
 button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
 button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
 
+####################################################################################################################################
 class Window:
 
     def __init__(self,parent):
@@ -116,6 +117,7 @@ Evan King Audio - https://www.youtube.com/user/EvanKingAudio
         Main.__instance -= 1
         self.toplevel.destroy()
 
+###################################################################################################################################
 class Options(Window): # Inherits class Window.
     '''Inherits the attributes and method of "Window".'''
 
@@ -139,19 +141,16 @@ class Options(Window): # Inherits class Window.
         self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
     
         self.frame01 = Frame(self.main_frame,bg="#666666")
-        self.frame01.pack(fill=BOTH,pady=30)
+        self.frame01.pack(fill=BOTH,pady=50)
 
         self.frame02 = Frame(self.main_frame,bg="#666666")
-        self.frame02.pack(fill=BOTH,pady=30)
+        self.frame02.pack(fill=BOTH,pady=50)
 
         self.frame03 = Frame(self.main_frame,bg="#666666")
-        self.frame03.pack(fill=BOTH,pady=30)
+        self.frame03.pack(fill=BOTH,pady=50)
 
         self.frame04 = Frame(self.main_frame,bg="#666666")
-        self.frame04.pack(fill=BOTH,pady=30)
-        
-        self.frame05 = Frame(self.main_frame,bg="#666666")
-        self.frame05.pack(side=BOTTOM,fill=BOTH,pady=10)
+        self.frame04.pack(side=BOTTOM,fill=BOTH,pady=10)
 
         self.difficulty = Label(self.frame01, text="Difficulty: ",font=("Fixedsys",18),bg="#666666",fg="white")
         self.difficulty.pack(side=LEFT, padx=10,pady=5)
@@ -185,25 +184,15 @@ class Options(Window): # Inherits class Window.
         self.audio_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
         self.audio_scale.set(self.current_settings[2])
 
-        self.submit = Button(self.frame05,text="Submit",font=("Fixedsys",18),
+        self.submit = Button(self.frame04,text="Submit",font=("Fixedsys",18),
                              command=self.submitted)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-        self.submit = Button(self.frame05,text="Cancel",font=("Fixedsys",18),
+        self.submit = Button(self.frame04,text="Cancel",font=("Fixedsys",18),
                              command=self.cancel)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
         self.setting_difficulty(self.current_settings[1])
-
-        ## Thomas Starling Addition Start
-        self.cheat_option = IntVar()
-        self.cheat_option.set(0)
-        self.maps = Label(self.frame04, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
-        self.maps.pack(side=LEFT,fill=X,padx=10)
-        
-        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red", variable=self.cheat_option)
-        self.cheat_button.pack(side=LEFT,fill=X,padx=10)
-        ## End
 
     def find_files(self,directory):
         files = []
@@ -237,7 +226,7 @@ class Options(Window): # Inherits class Window.
 
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades, self.cheat_option.get()]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -253,6 +242,7 @@ class Options(Window): # Inherits class Window.
         self.main_frame.destroy() # Deletes Frame, and all widgets belonging to it.
         self.main.pack() # Restores hidden window.
 
+####################################################################################################################################
 class Game_Window(Window): # Inherits class Window.
     '''Inherits the attributes and method of "Window".'''
 
@@ -267,17 +257,9 @@ class Game_Window(Window): # Inherits class Window.
 
         self.imageList()
 
-        ## Cheat Statment
-        ##Need to finish ##
-        #if self.cheat_option.get() == 0:
-            #self.health = 100
-            #self.money = 1000
-            #self.wave = 1
-        #else:
-        self.health = 999999999
-        self.money = 999999999
+        self.health = 100
+        self.money = 1000
         self.wave = 1
-        ##End
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
@@ -308,7 +290,7 @@ class Game_Window(Window): # Inherits class Window.
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
 
-        self.game_canvas = Canvas(self.display, bg="green")
+        self.game_canvas = Canvas(self.display, bg="black")
         self.game_canvas.pack(fill=BOTH,expand=True,padx=5,pady=5)
 
         self.photo = Image.open("./images/maps/"+self.current_settings[0])
@@ -365,42 +347,30 @@ class Game_Window(Window): # Inherits class Window.
     def quick(self):
         sort_algorithms.QuickSort()
 
-    def move_mob(self,event=None):
-        self.path = self.mob_move_route.path
-        self.path_length = 0
-
-        for each in self.path:
-            self.path_length += 1
-            self.previous = self.path[self.path_length-2]
-            print(each, self.previous)
-            colour = self.game_canvas.itemcget(self.game_grid.main_grid[(each[1],each[0])],"fill")
-            previous_colour = self.game_canvas.itemcget(self.game_grid.main_grid[(self.previous[1],self.previous[0])],"fill")
-            
-            if  colour == "blue" or colour == "red":
-                if colour == "blue":
-                    self.health -= 10
-                    self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
-                    self.health_label.config(text="Health: "+str(self.health))
-                    self.game_canvas.update_idletasks()
-            else:
-                if previous_colour != "red":
-                    self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
-                self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
-                self.game_canvas.update_idletasks()
-                time.sleep(0.5)
-
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
 
-        no_mobs = self.wave*2
+        no_mobs = (self.wave*3)+(self.wave)
+        if self.wave % 20:
+            no_mobs = 1
+        if no_mobs > 100:
+            no_mobs == 100
+            
         self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
-        
+
+        self.mob_wave = []
         for i in range(no_mobs):
-            self.game_canvas.after(100,self.move_mob)
-        
+            data = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
+            self.mob_wave.append(data)
+
+        for mob in self.mob_wave:
+            mob.move_mob()
+            time.sleep(1)
+                
         self.wave_end()
 
     def wave_end(self):
+        
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
         
         image = ImageGrab.grab().crop((data[0]+3,data[1],data[0]+900,data[1]+627))
@@ -413,11 +383,12 @@ class Game_Window(Window): # Inherits class Window.
         self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
 
-##    def gameover(self):
-##        self.game_canvas.delete(ALL)
-##        self.game_canvas.create_text(text="GAME OVER")
-##        time.sleep(3)
-##        self.main_menu()
+    def gameover(self):
+        self.game_canvas.delete(ALL)
+        self.game_canvas.create_text(300,300,text="GAME OVER",fill="white",font=("Fixedsys",30))
+        self.game_canvas.update()
+        time.sleep(3)
+        self.main_menu()
 
     def main_menu(self, event=None):
         '''Returns the user to the main menu.'''
@@ -431,6 +402,41 @@ class Game_Window(Window): # Inherits class Window.
         self.parent.unbind("<Escape>")
         self.main.pack()
 
+###################################################################################################################################
+class Animate_Wave:
+
+    def __init__(self, canvas, grid, health, health_label, route):
+        self.canvas = canvas
+        self.grid = grid
+        self.health = health
+        self.health_label = health_label
+        self.route = route
+        print(self.route)
+
+    def move_mob(self):
+        self.path = self.route
+        self.path_length = 0
+
+        for each in self.path:
+            self.path_length += 1
+            self.previous = self.route[self.path_length-2]
+            colour = self.canvas.itemcget(self.grid.main_grid[(each[1],each[0])],"fill")
+            previous_colour = self.canvas.itemcget(self.grid.main_grid[(self.previous[1],self.previous[0])],"fill")
+            
+            if  colour == "blue" or colour == "red":
+                if colour == "blue":
+                    self.health -= 10                        
+                    self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                    self.health_label.config(text="Health: "+str(self.health))
+                    self.canvas.update_idletasks()
+            else:
+                if previous_colour != "red":
+                    self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
+                self.canvas.update_idletasks()
+                time.sleep(0.5)
+                
+###################################################################################################################################
 class Game_Overlay:
     '''Inherits the attributes and method of "Window".'''
     __instance = 0

@@ -357,15 +357,16 @@ class Game_Window(Window): # Inherits class Window.
             no_mobs == 100
             
         self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        self.mob_move_route = self.mob_move_route.path
 
         self.mob_wave = []
         for i in range(no_mobs):
-            data = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
-            self.mob_wave.append(data)
+            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
+            self.mob_wave.append(class_object)
 
         for mob in self.mob_wave:
             mob.move_mob()
-            time.sleep(1)
+            time.sleep(0.5)
                 
         self.wave_end()
 
@@ -404,14 +405,12 @@ class Game_Window(Window): # Inherits class Window.
 
 ###################################################################################################################################
 class Animate_Wave:
-
+                  
     def __init__(self, canvas, grid, health, health_label, route):
         self.canvas = canvas
         self.grid = grid
-        self.health = health
         self.health_label = health_label
         self.route = route
-        print(self.route)
 
     def move_mob(self):
         self.path = self.route
@@ -425,7 +424,7 @@ class Animate_Wave:
             
             if  colour == "blue" or colour == "red":
                 if colour == "blue":
-                    self.health -= 10                        
+                    self.health -= 10
                     self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                     self.health_label.config(text="Health: "+str(self.health))
                     self.canvas.update_idletasks()
@@ -434,7 +433,7 @@ class Animate_Wave:
                     self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                 self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
                 self.canvas.update_idletasks()
-                time.sleep(0.5)
+            time.sleep(0.3)
                 
 ###################################################################################################################################
 class Game_Overlay:

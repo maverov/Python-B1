@@ -7,9 +7,11 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader,grid,sort_algorithms,search_algorithms
+from modules import image_loader,grid,sort_algorithms,search_algorithms,entities
 
-import os,sys,time,pickle,pygame,threading
+import os,sys,time,pickle,pygame
+
+from threading import *
 
 pygame.init()
 button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
@@ -65,7 +67,7 @@ class Main(Window): # Inherits class Window.
         self.title_banner_image = self.title_banner_image.resize((600,300),Image.ANTIALIAS)
         self.title_banner_image  = ImageTk.PhotoImage(self.title_banner_image)
         
-        self.title_banner = Label(self.frame, image=self.title_banner_image, font=("Fixedsys",36),
+        self.title_banner = Label(self.frame, image=self.title_banner_image,
                                   bg="#666666",fg="white")
         self.title_banner.pack(pady=10)
 
@@ -365,40 +367,57 @@ class Game_Window(Window): # Inherits class Window.
 
     def move_mob(self,event=None):
         self.path = self.mob_move_route.path
-        print(self.path)
+        self.path_length = 0
+
         for each in self.path:
-            print(each)
+            self.path_length += 1
+            self.previous = self.path[self.path_length-2]
+            print(each, self.previous)
             colour = self.game_canvas.itemcget(self.game_grid.main_grid[(each[1],each[0])],"fill")
+            previous_colour = self.game_canvas.itemcget(self.game_grid.main_grid[(self.previous[1],self.previous[0])],"fill")
+            
             if  colour == "blue" or colour == "red":
-                pass
+                if colour == "blue":
+                    self.health -= 10
+                    self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                    self.health_label.config(text="Health: "+str(self.health))
+                    self.game_canvas.update_idletasks()
             else:
+                if previous_colour != "red":
+                    self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                 self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
                 self.game_canvas.update_idletasks()
                 time.sleep(0.5)
 
     def wave_start(self):
-        self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
-        self.move_mob()
-##        mob_movement_thread = threading.Thread(target=self.move_mob,args=(self,))
-##        mob_movement_thread.start()
-##        mob_movement_thread.join()
+        pygame.mixer.Sound.play(button_accept)
 
+        no_mobs = self.wave*2
+        self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        
+        for i in range(no_mobs):
+            self.game_canvas.after(100,self.move_mob)
+        
         self.wave_end()
 
     def wave_end(self):
-        pygame.mixer.Sound.play(button_accept)
-
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
         
         image = ImageGrab.grab().crop((data[0]+3,data[1],data[0]+900,data[1]+627))
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
-        wave_info = [self.health,self.money,self.wave]
+        wave_info = [self.wave,self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","wb")
         pickle.dump(wave_info,wave_data)
 
         self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
+
+##    def gameover(self):
+##        self.game_canvas.delete(ALL)
+##        self.game_canvas.create_text(text="GAME OVER")
+##        time.sleep(3)
+##        self.main_menu()
 
     def main_menu(self, event=None):
         '''Returns the user to the main menu.'''

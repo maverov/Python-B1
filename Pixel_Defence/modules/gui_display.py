@@ -9,7 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities
 
-import os,sys,time,pickle,pygame
+import os,sys,time,pickle,pygame,threading
 
 from threading import *
 
@@ -369,9 +369,10 @@ class Game_Window(Window): # Inherits class Window.
         for i in range(no_mobs):
             class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health_label, self.mob_move_route)
             self.mob_wave.append(class_object)
+            print( no_mobs,"->",len(self.mob_wave) )
 
         for mob in self.mob_wave:
-            mob.move_mob()
+            mob.mob_move()
                 
         self.wave_end()
 
@@ -383,12 +384,16 @@ class Game_Window(Window): # Inherits class Window.
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
         wave_info = [self.wave,self.health,self.money]
+<<<<<<< HEAD
         wave_data = open("./modules/wave_settings.pixel","wb")
         pickle.dump(wave_info,wave_data)
 
+=======
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
         
+        self.wave += 1
+>>>>>>> origin/master
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -420,7 +425,11 @@ class Animate_Wave:
         self.grid = grid
         self.health_label = health_label
         self.route = route
+<<<<<<< HEAD
         self.health = Animate_Wave.__health
+=======
+        self.health = health
+>>>>>>> origin/master
 
     def move_mob(self):
         self.path = self.route

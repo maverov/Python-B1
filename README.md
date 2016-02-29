@@ -1,4 +1,4 @@
-# Python-B1 - WIP
+# Pixel Tower Defence - WIP
 
 Python Virtual Robot, ALL Project Semester 2
 

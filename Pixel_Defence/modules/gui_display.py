@@ -7,7 +7,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader,grid,sort_algorithms,search_algorithms,entities
+from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
 import os,sys,time,pickle,pygame,threading
 
@@ -141,16 +141,19 @@ class Options(Window): # Inherits class Window.
         self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
     
         self.frame01 = Frame(self.main_frame,bg="#666666")
-        self.frame01.pack(fill=BOTH,pady=50)
+        self.frame01.pack(fill=BOTH,pady=30)
 
         self.frame02 = Frame(self.main_frame,bg="#666666")
-        self.frame02.pack(fill=BOTH,pady=50)
+        self.frame02.pack(fill=BOTH,pady=30)
 
         self.frame03 = Frame(self.main_frame,bg="#666666")
-        self.frame03.pack(fill=BOTH,pady=50)
+        self.frame03.pack(fill=BOTH,pady=30)
 
         self.frame04 = Frame(self.main_frame,bg="#666666")
-        self.frame04.pack(side=BOTTOM,fill=BOTH,pady=10)
+        self.frame04.pack(fill=BOTH,pady=30)
+        
+        self.frame05 = Frame(self.main_frame,bg="#666666")
+        self.frame05.pack(side=BOTTOM,fill=BOTH,pady=10)
 
         self.difficulty = Label(self.frame01, text="Difficulty: ",font=("Fixedsys",18),bg="#666666",fg="white")
         self.difficulty.pack(side=LEFT, padx=10,pady=5)
@@ -184,15 +187,24 @@ class Options(Window): # Inherits class Window.
         self.audio_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
         self.audio_scale.set(self.current_settings[2])
 
-        self.submit = Button(self.frame04,text="Submit",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Submit",font=("Fixedsys",18),
                              command=self.submitted)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-        self.submit = Button(self.frame04,text="Cancel",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Cancel",font=("Fixedsys",18),
                              command=self.cancel)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
         self.setting_difficulty(self.current_settings[1])
+
+        ##Tom Starling Cheat button
+        self.cheat_option = IntVar()
+        self.cheat_label = Label(self.frame04, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
+        self.cheat_label.pack(side=LEFT,fill=X,padx=10)
+        
+        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red", variable=self.cheat_option)
+        self.cheat_button.pack(side=LEFT,fill=X,padx=10)
+        ## End
 
     def find_files(self,directory):
         files = []
@@ -226,7 +238,7 @@ class Options(Window): # Inherits class Window.
 
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades, self.cheat_option.get()]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -249,6 +261,14 @@ class Game_Window(Window): # Inherits class Window.
     def __init__(self,parent,main):
         '''Displays all the widgets for the main Tower Defence Game.'''
         pygame.mixer.Sound.play(button_accept)
+
+        ##Tom Starling cheat menu option
+        #if self.cheat_option.get() == 1:
+            #print("On")
+            #self.c_menu()
+        #else:
+            #print("Off")
+        ##End
 
         for file in os.listdir("./images/game_waves"):
             os.remove("./images/game_waves/"+file)
@@ -288,9 +308,21 @@ class Game_Window(Window): # Inherits class Window.
 
         self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.sort_data.pack(fill=BOTH)
+        self.sort_data_up = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_up.pack(fill=BOTH)
+        self.sort_data_down = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_down.pack(fill=BOTH)
+
 
         self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.button_data.pack(fill=BOTH)
+
+        self.tower_d1 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d2 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d3 = Frame(self.button_data, bg="#666666", relief=RIDGE)
+        self.tower_d3.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d2.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d1.pack(side=BOTTOM,fill=BOTH)
 
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
@@ -334,23 +366,53 @@ class Game_Window(Window): # Inherits class Window.
         self.sort_canvas = Canvas(self.sort_data, width=190, height=355)
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
-        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
-
-        self.seperator = ttk.Separator(self.sort_data).pack(fill=X)
-
-        self.bubble_sort = Button(self.button_data, text="Bubble Sort", font=("Fixedsys",14),
+        self.bubble_sort = Button(self.sort_data_down, text="Bubble Sort", font=("Fixedsys",14),
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
-        self.bubble_sort.pack(fill=X,padx=5,pady=5)
+        self.bubble_sort.pack(fill=X, padx=5, pady=5)
 
-        self.sort_options = Button(self.button_data, text="Sort Options", font=("Fixedsys",14),
-                                 command=lambda: self.s_options())
-        self.sort_options.pack(fill=X,padx=5,pady=5)
+        self.quick_sort = Button(self.sort_data_down, text="Quick Sort", font=("Fixedsys",14),
+                                 command=lambda: self.quick())
+        self.quick_sort.pack(fill=X, padx=5, pady=5)
+
+        self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
+
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
+        
+        self.turret1 = Button(self.tower_d1, text="T1", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(0))
+        self.turret1.pack(side=LEFT,padx=15,pady=3)
+        
+        self.turret2 = Button(self.tower_d1, text="T2", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(1))
+        self.turret2.pack(side=RIGHT,padx=15,pady=3)
+        self.turret3 = Button(self.tower_d2, text="T3", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(2))
+        self.turret3.pack(side=LEFT,padx=15,pady=3)
+        self.turret4 = Button(self.tower_d2, text="T4", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(3))
+        self.turret4.pack(side=RIGHT,padx=15,pady=3)
+        self.turret5 = Button(self.tower_d3, text="T5", font=("Fixedsys",14),height=3,width=8,
+                              command=lambda: self.set_ID(4))
+        self.turret5.pack(side=LEFT,padx=15,pady=3)
+        self.barricade6 = Button(self.tower_d3, text="Ba", font=("Fixedsys",14),height=3,width=8,
+                                 command=lambda: self.set_ID(5))
+        self.barricade6.pack(side=RIGHT,padx=15,pady=3)
+
+        self.towers_list=['red','blue','green','yellow','purple','brown']
+        self.ID = 5
+
+    def set_ID(self, ID):
+        self.ID = ID
+        print(self.ID)
 
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)
 
     def s_options(self):
         sort_algorithms.sort_options()
+
+    def c_menu(self):
+        cheat_menu.Cheat_Menu()
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
@@ -372,7 +434,7 @@ class Game_Window(Window): # Inherits class Window.
             print( no_mobs,"->",len(self.mob_wave) )
 
         for mob in self.mob_wave:
-            mob.mob_move()
+            mob.move_mob()
                 
         self.wave_end()
 
@@ -384,16 +446,9 @@ class Game_Window(Window): # Inherits class Window.
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
         wave_info = [self.wave,self.health,self.money]
-<<<<<<< HEAD
-        wave_data = open("./modules/wave_settings.pixel","wb")
-        pickle.dump(wave_info,wave_data)
-
-=======
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
-        
-        self.wave += 1
->>>>>>> origin/master
+
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -425,11 +480,7 @@ class Animate_Wave:
         self.grid = grid
         self.health_label = health_label
         self.route = route
-<<<<<<< HEAD
         self.health = Animate_Wave.__health
-=======
-        self.health = health
->>>>>>> origin/master
 
     def move_mob(self):
         self.path = self.route

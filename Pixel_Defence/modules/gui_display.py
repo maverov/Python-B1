@@ -308,9 +308,21 @@ class Game_Window(Window): # Inherits class Window.
 
         self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.sort_data.pack(fill=BOTH)
+        self.sort_data_up = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_up.pack(fill=BOTH)
+        self.sort_data_down = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_down.pack(fill=BOTH)
+
 
         self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.button_data.pack(fill=BOTH)
+
+        self.tower_d1 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d2 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d3 = Frame(self.button_data, bg="#666666", relief=RIDGE)
+        self.tower_d3.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d2.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d1.pack(side=BOTTOM,fill=BOTH)
 
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
@@ -354,17 +366,44 @@ class Game_Window(Window): # Inherits class Window.
         self.sort_canvas = Canvas(self.sort_data, width=190, height=355)
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
-        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
-
-        self.seperator = ttk.Separator(self.sort_data).pack(fill=X)
-
-        self.bubble_sort = Button(self.button_data, text="Bubble Sort", font=("Fixedsys",14),
+        self.bubble_sort = Button(self.sort_data_down, text="Bubble Sort", font=("Fixedsys",14),
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
-        self.bubble_sort.pack(fill=X,padx=5,pady=5)
+        self.bubble_sort.pack(fill=X, padx=5, pady=5)
 
-        self.sort_options = Button(self.button_data, text="Sort Options", font=("Fixedsys",14),
-                                 command=lambda: self.s_options())
-        self.sort_options.pack(fill=X,padx=5,pady=5)
+        self.quick_sort = Button(self.sort_data_down, text="Quick Sort", font=("Fixedsys",14),
+                                 command=lambda: self.quick())
+        self.quick_sort.pack(fill=X, padx=5, pady=5)
+
+        self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
+
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
+        
+        self.turret1 = Button(self.tower_d1, text="T1", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(0))
+        self.turret1.pack(side=LEFT,padx=15,pady=3)
+        
+        self.turret2 = Button(self.tower_d1, text="T2", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(1))
+        self.turret2.pack(side=RIGHT,padx=15,pady=3)
+        self.turret3 = Button(self.tower_d2, text="T3", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(2))
+        self.turret3.pack(side=LEFT,padx=15,pady=3)
+        self.turret4 = Button(self.tower_d2, text="T4", font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(3))
+        self.turret4.pack(side=RIGHT,padx=15,pady=3)
+        self.turret5 = Button(self.tower_d3, text="T5", font=("Fixedsys",14),height=3,width=8,
+                              command=lambda: self.set_ID(4))
+        self.turret5.pack(side=LEFT,padx=15,pady=3)
+        self.barricade6 = Button(self.tower_d3, text="Ba", font=("Fixedsys",14),height=3,width=8,
+                                 command=lambda: self.set_ID(5))
+        self.barricade6.pack(side=RIGHT,padx=15,pady=3)
+
+        self.towers_list=['red','blue','green','yellow','purple','brown']
+        self.ID = 5
+
+    def set_ID(self, ID):
+        self.ID = ID
+        print(self.ID)
 
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)

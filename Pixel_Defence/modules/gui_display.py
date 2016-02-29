@@ -342,15 +342,15 @@ class Game_Window(Window): # Inherits class Window.
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
         self.bubble_sort.pack(fill=X,padx=5,pady=5)
 
-        self.quick_sort = Button(self.button_data, text="Quick Sort", font=("Fixedsys",14),
-                                 command=lambda: self.quick())
-        self.quick_sort.pack(fill=X,padx=5,pady=5)
+        self.sort_options = Button(self.button_data, text="Sort Options", font=("Fixedsys",14),
+                                 command=lambda: self.s_options())
+        self.sort_options.pack(fill=X,padx=5,pady=5)
 
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)
 
-    def quick(self):
-        sort_algorithms.QuickSort()
+    def s_options(self):
+        sort_algorithms.sort_options()
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
@@ -384,7 +384,7 @@ class Game_Window(Window): # Inherits class Window.
         
         wave_info = [self.wave,self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","a")
-        wave_data.write(str(wave_info))
+        wave_data.write(str(wave_info)+"\n")
         
         self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
@@ -416,6 +416,7 @@ class Animate_Wave:
         self.grid = grid
         self.health_label = health_label
         self.route = route
+        self.health = health
 
     def move_mob(self):
         self.path = self.route
@@ -447,7 +448,7 @@ class Game_Overlay:
 
     def __init__(self):
         '''Displays toplevel widget displaying user scores.'''
-
+        
         wave_data = open("./modules/wave_settings.pixel","r")
         wave_info = []
 
@@ -489,6 +490,14 @@ class Game_Overlay:
             Style().configure("Treeview.Heading",font=("Fixedsys",18))
 
             self.scrollbar.config(command=self.table.yview) # Sets scollbar to treeview table.
+
+            ##Insert Data
+            for i in wave_info:
+                i = i.replace("[","")
+                i = i.replace("]","")
+                i = i.split(",")
+                self.table.insert("", -1, values=(i[0],i[2],i[1]))
+            ##End
 
     def instance(self, event=None):
         pygame.mixer.Sound.play(button_deny)

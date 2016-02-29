@@ -1,4 +1,7 @@
 import time
+import pygame
+from tkinter import *
+from tkinter.ttk import *
 
 class BubbleSort:
 
@@ -36,7 +39,31 @@ class BubbleSort:
         else:
             self.canvas.itemconfig(self.sort_grid[(j,0)],fill="")
 
-class QuickSort:
+class sort_options:
 
+    __instance = 0
+    
     def __init__(self):
-        print("TEST")
+
+        self.button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
+        self.button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
+        
+        if sort_options.__instance > 0: # Prevents more than one overlay opening at anytime.
+            pass
+        else:
+            sort_options.__instance += 1 # Increments private attribute __instance.
+            pygame.mixer.Sound.play(self.button_accept)
+            
+            self.overlay = Toplevel()
+            self.overlay.title("Sort Options")
+            self.overlay.geometry("500x300")
+            self.overlay.wm_iconbitmap("./images/logo.ico")
+            self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
+
+            ##Finish Setting up UI
+
+    def instance(self, event=None):
+        pygame.mixer.Sound.play(self.button_deny)
+        sort_options.__instance -= 1 # Decrements private attribute __instance.
+        self.overlay.destroy()
+    

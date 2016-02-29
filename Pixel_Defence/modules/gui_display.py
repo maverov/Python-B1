@@ -9,7 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
-import os,sys,time,pickle,pygame
+import os,sys,time,pickle,pygame,threading
 
 from threading import *
 
@@ -284,7 +284,7 @@ class Game_Window(Window): # Inherits class Window.
 
         self.health = 100
         self.money = 1000
-        self.wave = 1
+        self.wave = 0
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
@@ -377,9 +377,10 @@ class Game_Window(Window): # Inherits class Window.
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
-
-        no_mobs = (self.wave*3)+(self.wave)
-        if self.wave % 20:
+        self.wave += 1
+        
+        no_mobs = (self.wave*4)
+        if self.wave % 20 == 0:
             no_mobs = 1
         if no_mobs > 100:
             no_mobs == 100
@@ -389,12 +390,12 @@ class Game_Window(Window): # Inherits class Window.
 
         self.mob_wave = []
         for i in range(no_mobs):
-            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
+            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health_label, self.mob_move_route)
             self.mob_wave.append(class_object)
+            print( no_mobs,"->",len(self.mob_wave) )
 
         for mob in self.mob_wave:
-            mob.move_mob()
-            time.sleep(0.5)
+            mob.mob_move()
                 
         self.wave_end()
 
@@ -406,10 +407,16 @@ class Game_Window(Window): # Inherits class Window.
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
         wave_info = [self.wave,self.health,self.money]
+<<<<<<< HEAD
+        wave_data = open("./modules/wave_settings.pixel","wb")
+        pickle.dump(wave_info,wave_data)
+
+=======
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
         
         self.wave += 1
+>>>>>>> origin/master
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -433,13 +440,19 @@ class Game_Window(Window): # Inherits class Window.
 
 ###################################################################################################################################
 class Animate_Wave:
+    
+    __health = 100
                   
-    def __init__(self, canvas, grid, health, health_label, route):
+    def __init__(self, canvas, grid, health_label, route):
         self.canvas = canvas
         self.grid = grid
         self.health_label = health_label
         self.route = route
+<<<<<<< HEAD
+        self.health = Animate_Wave.__health
+=======
         self.health = health
+>>>>>>> origin/master
 
     def move_mob(self):
         self.path = self.route
@@ -462,7 +475,7 @@ class Animate_Wave:
                     self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                 self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
                 self.canvas.update_idletasks()
-            time.sleep(0.3)
+            time.sleep(0.05) # dbg
                 
 ###################################################################################################################################
 class Game_Overlay:

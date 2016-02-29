@@ -9,7 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
-import os,sys,time,pickle,pygame,threading
+import os,sys,time,pickle,pygame
 
 from threading import *
 
@@ -284,7 +284,7 @@ class Game_Window(Window): # Inherits class Window.
 
         self.health = 100
         self.money = 1000
-        self.wave = 0
+        self.wave = 1
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
@@ -308,21 +308,9 @@ class Game_Window(Window): # Inherits class Window.
 
         self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.sort_data.pack(fill=BOTH)
-        self.sort_data_up = Frame(self.sort_data, bg="#666666",relief=RIDGE)
-        self.sort_data_up.pack(fill=BOTH)
-        self.sort_data_down = Frame(self.sort_data, bg="#666666",relief=RIDGE)
-        self.sort_data_down.pack(fill=BOTH)
-
 
         self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.button_data.pack(fill=BOTH)
-
-        self.tower_d1 = Frame(self.button_data,bg="#666666",relief = RIDGE)
-        self.tower_d2 = Frame(self.button_data,bg="#666666",relief = RIDGE)
-        self.tower_d3 = Frame(self.button_data, bg="#666666", relief=RIDGE)
-        self.tower_d3.pack(side=BOTTOM,fill=BOTH)
-        self.tower_d2.pack(side=BOTTOM,fill=BOTH)
-        self.tower_d1.pack(side=BOTTOM,fill=BOTH)
 
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
@@ -366,44 +354,17 @@ class Game_Window(Window): # Inherits class Window.
         self.sort_canvas = Canvas(self.sort_data, width=190, height=355)
         self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
 
-        self.bubble_sort = Button(self.sort_data_down, text="Bubble Sort", font=("Fixedsys",14),
-                                  command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
-        self.bubble_sort.pack(fill=X, padx=5, pady=5)
-
-        self.quick_sort = Button(self.sort_data_down, text="Quick Sort", font=("Fixedsys",14),
-                                 command=lambda: self.quick())
-        self.quick_sort.pack(fill=X, padx=5, pady=5)
-
-        self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
-
         self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
-        
-        self.turret1 = Button(self.tower_d1, text="T1", font=("Fixedsys",14),width=8,height=3,
-                              command=lambda: self.set_ID(0))
-        self.turret1.pack(side=LEFT,padx=15,pady=3)
-        
-        self.turret2 = Button(self.tower_d1, text="T2", font=("Fixedsys",14),width=8,height=3,
-                              command=lambda: self.set_ID(1))
-        self.turret2.pack(side=RIGHT,padx=15,pady=3)
-        self.turret3 = Button(self.tower_d2, text="T3", font=("Fixedsys",14),width=8,height=3,
-                              command=lambda: self.set_ID(2))
-        self.turret3.pack(side=LEFT,padx=15,pady=3)
-        self.turret4 = Button(self.tower_d2, text="T4", font=("Fixedsys",14),width=8,height=3,
-                              command=lambda: self.set_ID(3))
-        self.turret4.pack(side=RIGHT,padx=15,pady=3)
-        self.turret5 = Button(self.tower_d3, text="T5", font=("Fixedsys",14),height=3,width=8,
-                              command=lambda: self.set_ID(4))
-        self.turret5.pack(side=LEFT,padx=15,pady=3)
-        self.barricade6 = Button(self.tower_d3, text="Ba", font=("Fixedsys",14),height=3,width=8,
-                                 command=lambda: self.set_ID(5))
-        self.barricade6.pack(side=RIGHT,padx=15,pady=3)
 
-        self.towers_list=['red','blue','green','yellow','purple','brown']
-        self.ID = 5
+        self.seperator = ttk.Separator(self.sort_data).pack(fill=X)
 
-    def set_ID(self, ID):
-        self.ID = ID
-        print(self.ID)
+        self.bubble_sort = Button(self.button_data, text="Bubble Sort", font=("Fixedsys",14),
+                                  command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
+        self.bubble_sort.pack(fill=X,padx=5,pady=5)
+
+        self.sort_options = Button(self.button_data, text="Sort Options", font=("Fixedsys",14),
+                                 command=lambda: self.s_options())
+        self.sort_options.pack(fill=X,padx=5,pady=5)
 
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)
@@ -416,10 +377,9 @@ class Game_Window(Window): # Inherits class Window.
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
-        self.wave += 1
-        
-        no_mobs = (self.wave*4)
-        if self.wave % 20 == 0:
+
+        no_mobs = (self.wave*3)+(self.wave)
+        if self.wave % 20:
             no_mobs = 1
         if no_mobs > 100:
             no_mobs == 100
@@ -429,12 +389,12 @@ class Game_Window(Window): # Inherits class Window.
 
         self.mob_wave = []
         for i in range(no_mobs):
-            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health_label, self.mob_move_route)
+            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
             self.mob_wave.append(class_object)
-            print( no_mobs,"->",len(self.mob_wave) )
 
         for mob in self.mob_wave:
             mob.move_mob()
+            time.sleep(0.5)
                 
         self.wave_end()
 
@@ -448,7 +408,8 @@ class Game_Window(Window): # Inherits class Window.
         wave_info = [self.wave,self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
-
+        
+        self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -472,15 +433,13 @@ class Game_Window(Window): # Inherits class Window.
 
 ###################################################################################################################################
 class Animate_Wave:
-    
-    __health = 100
                   
-    def __init__(self, canvas, grid, health_label, route):
+    def __init__(self, canvas, grid, health, health_label, route):
         self.canvas = canvas
         self.grid = grid
         self.health_label = health_label
         self.route = route
-        self.health = Animate_Wave.__health
+        self.health = health
 
     def move_mob(self):
         self.path = self.route
@@ -503,7 +462,7 @@ class Animate_Wave:
                     self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                 self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
                 self.canvas.update_idletasks()
-            time.sleep(0.05) # dbg
+            time.sleep(0.3)
                 
 ###################################################################################################################################
 class Game_Overlay:

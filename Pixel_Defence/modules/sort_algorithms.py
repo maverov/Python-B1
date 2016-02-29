@@ -10,7 +10,7 @@ class BubbleSort:
         self.sort_grid = sort_grid
         
         colour_list = []
-        for i in range(4):
+        for i in range(5):
             fill_colour = canvas.itemcget(sort_grid[(i,0)],"fill")
             if fill_colour == "red":
                 colour_list.append(1)

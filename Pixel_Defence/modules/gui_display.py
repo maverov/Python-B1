@@ -7,7 +7,7 @@ from tkinter import *
 
 from PIL import Image, ImageTk, ImageGrab
 
-from modules import image_loader,grid,sort_algorithms,search_algorithms,entities
+from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
 import os,sys,time,pickle,pygame
 
@@ -141,16 +141,19 @@ class Options(Window): # Inherits class Window.
         self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
     
         self.frame01 = Frame(self.main_frame,bg="#666666")
-        self.frame01.pack(fill=BOTH,pady=50)
+        self.frame01.pack(fill=BOTH,pady=30)
 
         self.frame02 = Frame(self.main_frame,bg="#666666")
-        self.frame02.pack(fill=BOTH,pady=50)
+        self.frame02.pack(fill=BOTH,pady=30)
 
         self.frame03 = Frame(self.main_frame,bg="#666666")
-        self.frame03.pack(fill=BOTH,pady=50)
+        self.frame03.pack(fill=BOTH,pady=30)
 
         self.frame04 = Frame(self.main_frame,bg="#666666")
-        self.frame04.pack(side=BOTTOM,fill=BOTH,pady=10)
+        self.frame04.pack(fill=BOTH,pady=30)
+        
+        self.frame05 = Frame(self.main_frame,bg="#666666")
+        self.frame05.pack(side=BOTTOM,fill=BOTH,pady=10)
 
         self.difficulty = Label(self.frame01, text="Difficulty: ",font=("Fixedsys",18),bg="#666666",fg="white")
         self.difficulty.pack(side=LEFT, padx=10,pady=5)
@@ -184,15 +187,24 @@ class Options(Window): # Inherits class Window.
         self.audio_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
         self.audio_scale.set(self.current_settings[2])
 
-        self.submit = Button(self.frame04,text="Submit",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Submit",font=("Fixedsys",18),
                              command=self.submitted)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-        self.submit = Button(self.frame04,text="Cancel",font=("Fixedsys",18),
+        self.submit = Button(self.frame05,text="Cancel",font=("Fixedsys",18),
                              command=self.cancel)
         self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
         self.setting_difficulty(self.current_settings[1])
+
+        ##Tom Starling Cheat button
+        self.cheat_option = IntVar()
+        self.cheat_label = Label(self.frame04, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
+        self.cheat_label.pack(side=LEFT,fill=X,padx=10)
+        
+        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red", variable=self.cheat_option)
+        self.cheat_button.pack(side=LEFT,fill=X,padx=10)
+        ## End
 
     def find_files(self,directory):
         files = []
@@ -226,7 +238,7 @@ class Options(Window): # Inherits class Window.
 
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades, self.cheat_option.get()]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -249,6 +261,14 @@ class Game_Window(Window): # Inherits class Window.
     def __init__(self,parent,main):
         '''Displays all the widgets for the main Tower Defence Game.'''
         pygame.mixer.Sound.play(button_accept)
+
+        ##Tom Starling cheat menu option
+        #if self.cheat_option.get() == 1:
+            #print("On")
+            #self.c_menu()
+        #else:
+            #print("Off")
+        ##End
 
         for file in os.listdir("./images/game_waves"):
             os.remove("./images/game_waves/"+file)
@@ -351,6 +371,9 @@ class Game_Window(Window): # Inherits class Window.
 
     def s_options(self):
         sort_algorithms.sort_options()
+
+    def c_menu(self):
+        cheat_menu.Cheat_Menu()
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)

@@ -434,7 +434,7 @@ class Game_Window(Window): # Inherits class Window.
             print( no_mobs,"->",len(self.mob_wave) )
 
         for mob in self.mob_wave:
-            mob.mob_move()
+            mob.move_mob()
                 
         self.wave_end()
 
@@ -446,16 +446,9 @@ class Game_Window(Window): # Inherits class Window.
         image.save("./images/game_waves/wave_"+str(self.wave)+".png")
         
         wave_info = [self.wave,self.health,self.money]
-<<<<<<< HEAD
-        wave_data = open("./modules/wave_settings.pixel","wb")
-        pickle.dump(wave_info,wave_data)
-
-=======
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
-        
-        self.wave += 1
->>>>>>> origin/master
+
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -487,11 +480,7 @@ class Animate_Wave:
         self.grid = grid
         self.health_label = health_label
         self.route = route
-<<<<<<< HEAD
         self.health = Animate_Wave.__health
-=======
-        self.health = health
->>>>>>> origin/master
 
     def move_mob(self):
         self.path = self.route

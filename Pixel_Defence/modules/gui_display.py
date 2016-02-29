@@ -378,8 +378,8 @@ class Game_Window(Window): # Inherits class Window.
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
 
-        no_mobs = (self.wave*3)+(self.wave)
-        if self.wave % 20:
+        no_mobs = (self.wave*4)
+        if self.wave % 20 == 0:
             no_mobs = 1
         if no_mobs > 100:
             no_mobs == 100
@@ -394,8 +394,8 @@ class Game_Window(Window): # Inherits class Window.
 
         for mob in self.mob_wave:
             mob.move_mob()
-            time.sleep(0.5)
-                
+
+        self.wave += 1
         self.wave_end()
 
     def wave_end(self):
@@ -409,7 +409,6 @@ class Game_Window(Window): # Inherits class Window.
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
         
-        self.wave += 1
         self.round_button.config(text="Start Wave "+str(self.wave))
 
     def gameover(self):
@@ -462,7 +461,7 @@ class Animate_Wave:
                     self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                 self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
                 self.canvas.update_idletasks()
-            time.sleep(0.3)
+            time.sleep(0.03)
                 
 ###################################################################################################################################
 class Game_Overlay:

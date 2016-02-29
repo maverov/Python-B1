@@ -17,7 +17,7 @@ class Grid:
         self.n_barricades = n_barricades
 
         self.main_grid = self.generate_grid(self.canvas01,100,100,31,31,22,19,"",True)
-        self.sort_grid = self.generate_grid(self.canvas02,300,300,200,72,1,5,"black",False)
+        self.sort_grid = self.generate_grid(self.canvas02,4,1,90,42.5,1,4,"black",False)
 
         self.canvas01.itemconfig(self.main_grid[(0,0)],fill="red")
         self.canvas01.itemconfig(self.main_grid[(18,21)],fill="blue")

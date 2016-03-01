@@ -202,9 +202,18 @@ class Options(Window): # Inherits class Window.
         self.cheat_label = Label(self.frame04, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
         self.cheat_label.pack(side=LEFT,fill=X,padx=10)
         
-        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red", variable=self.cheat_option)
+        self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red",
+                                        variable=self.cheat_option, command=lambda: self.cheat_menu(self.cheat_option))
         self.cheat_button.pack(side=LEFT,fill=X,padx=10)
-        ## End
+
+    def cheat_menu(self, state):
+        if state.get() == 1:
+            cheat_menu.Cheat_Menu()
+            #print("ON")
+        else:
+            pass
+            #print("OFF")
+        ##End
 
     def find_files(self,directory):
         files = []
@@ -238,7 +247,7 @@ class Options(Window): # Inherits class Window.
 
     def submitted(self):
         pygame.mixer.Sound.play(button_accept)
-        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades, self.cheat_option.get()]
+        setting_data = [self._map.get(),self.difficulty,self.audio_scale.get(),self.n_barricades]
         pygame.mixer.music.set_volume(self.audio_scale.get()/100)
         settings_file = open("./modules/settings.pixel","wb")
         pickle.dump(setting_data,settings_file)
@@ -261,14 +270,6 @@ class Game_Window(Window): # Inherits class Window.
     def __init__(self,parent,main):
         '''Displays all the widgets for the main Tower Defence Game.'''
         pygame.mixer.Sound.play(button_accept)
-
-        ##Tom Starling cheat menu option
-        #if self.cheat_option.get() == 1:
-            #print("On")
-            #self.c_menu()
-        #else:
-            #print("Off")
-        ##End
 
         for file in os.listdir("./images/game_waves"):
             os.remove("./images/game_waves/"+file)
@@ -371,9 +372,6 @@ class Game_Window(Window): # Inherits class Window.
 
     def s_options(self):
         sort_algorithms.sort_options()
-
-    def c_menu(self):
-        cheat_menu.Cheat_Menu()
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)

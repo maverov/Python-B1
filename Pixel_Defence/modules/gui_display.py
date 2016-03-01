@@ -262,6 +262,14 @@ class Options(Window): # Inherits class Window.
         self.main.pack() # Restores hidden window.
 
 ####################################################################################################################################
+class Game_Constants():
+
+     def __init__(self):
+         self.health = 100
+         self.money = 1000
+         self.wave = 1
+
+####################################################################################################################################
 class Game_Window(Window): # Inherits class Window.
     '''Inherits the attributes and method of "Window".'''
 
@@ -277,10 +285,11 @@ class Game_Window(Window): # Inherits class Window.
         Window.__init__(self,parent) # Inherets the attributes and methods from class Window
 
         self.imageList()
-
-        self.health = 100
-        self.money = 1000
-        self.wave = 1
+        initial_data = Game_Constants()
+        
+        self.health = initial_data.health
+        self.money = initial_data.money
+        self.wave = initial_data.wave
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
@@ -391,7 +400,7 @@ class Game_Window(Window): # Inherits class Window.
         Thread_Tasks(self.queue).start()
 
         self.parent.after(100,self.queue_processes)
-            
+
         self.wave += 1
         self.wave_end()
 

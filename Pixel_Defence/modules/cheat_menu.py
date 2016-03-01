@@ -12,7 +12,8 @@ class Cheat_Menu:
 
         self.button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
         self.button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
-        
+
+        #Layout & Window
         if Cheat_Menu.__instance > 0: # Prevents more than one overlay opening at anytime.
             pass
         else:
@@ -21,26 +22,83 @@ class Cheat_Menu:
             
             self.overlay = Toplevel()
             self.overlay.title("Cheat Menu")
-            self.overlay.geometry("500x300")
+            self.overlay.resizable(0,0)
+            self.overlay.geometry("350x180")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
-            #Layout            
-            self.main_frame = Frame(self.overlay,bg="#666666")
-            self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
-    
-            self.frame01 = Frame(self.main_frame,bg="#666666")
-            self.frame01.pack(fill=BOTH,pady=30)
-
-            self.frame02 = Frame(self.main_frame,bg="#666666")
-            self.frame02.pack(fill=BOTH,pady=30)
-
-            self.frame03 = Frame(self.main_frame,bg="#666666")
-            self.frame03.pack(fill=BOTH,pady=30)
-
             #Attributes
-            self.cheat_label = Label(self.frame01, text="Cheats: ",font=("Fixedsys",18),bg="#666666",fg="white")
-            self.cheat_label.pack(side=LEFT,fill=X,padx=10)
+            self.frame01 = Frame(self.overlay)
+            self.frame01.pack(fill=BOTH)
+
+            self.frame02 = Frame(self.overlay)
+            self.frame02.pack(fill=BOTH, pady=5)
+
+            self.frame03 = Frame(self.overlay)
+            self.frame03.pack(fill=BOTH, pady=5)
+
+            self.frame04 = Frame(self.overlay)
+            self.frame04.pack(fill=BOTH, pady=5)
+
+            self.frame05 = Frame(self.overlay)
+            self.frame05.pack(fill=BOTH, pady=5)
+
+            self.cheats = Label(self.frame01, text="Cheat Menu!",font=("Fixedsys",18))
+            self.cheats.pack(side=LEFT, fill=X,expand=True,padx=10)
+            
+            self.cheat_healthmoney = Label(self.frame02, text="Unlimited Health and Money:",font=("Fixedsys",16))
+            self.cheat_healthmoney.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            var1 = BooleanVar()
+            var1.set(False)
+            self.unlimited_toggle_button = Checkbutton(self.frame02, text='Cheat OFF', variable=var1,
+                                                    command=lambda : self.unlimited_toggle(var1))
+            self.unlimited_toggle_button.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            self.speed_hack = Label(self.frame03, text="Speed Hack: ",font=("Fixedsys",16))
+            self.speed_hack.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            self.speed_scale = Scale(self.frame03,from_=-50,to=50,orient=HORIZONTAL)
+            self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
+            self.speed_scale.set(0)
+
+            self.cheat_instant = Label(self.frame04, text="Unlock All Towers:",font=("Fixedsys",16))
+            self.cheat_instant.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            var2 = BooleanVar()
+            var2.set(False)
+            self.instant_toggle_button = Checkbutton(self.frame04, text='Cheat OFF', variable=var2,
+                                                    command=lambda : self.unlock_towers(var2))
+            self.instant_toggle_button.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+
+            self.cheat_instant_win = Label(self.frame05, text="Instant Win",font=("Fixedsys",16))
+            self.cheat_instant_win.pack(side=LEFT, fill=X,expand=True,padx=10)
+            
+            self.win = Button(self.frame05, text="Activate", command=lambda: self.instant_win())
+            self.win.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+
+    def unlimited_toggle(self, state):
+        if state.get() == 1:
+            self.unlimited_toggle_button.config(text="Cheat ON")
+            message = messagebox.showinfo("Activated", "Cheat Activated")
+            self.unlimited_toggle_button.state(["disabled"])
+            #print("ON")
+        else:
+            self.unlimited_toggle_button.config(text="Cheat OFF")
+            #print("OFF")
+
+    def unlock_towers(self, state):
+        if state.get() == 1:
+            self.instant_toggle_button.config(text="Cheat ON")
+            message = messagebox.showinfo("Activated", "Cheat Activated")
+            self.instant_toggle_button.state(["disabled"])
+            #print("ON")
+        else:
+            pass
+
+    def instant_win(self, event=None):
+        print("Activated")
 
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)

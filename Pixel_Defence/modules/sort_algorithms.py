@@ -47,7 +47,8 @@ class sort_options:
 
         self.button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
         self.button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
-        
+
+        #Layout & Window
         if sort_options.__instance > 0: # Prevents more than one overlay opening at anytime.
             pass
         else:
@@ -56,12 +57,32 @@ class sort_options:
             
             self.overlay = Toplevel()
             self.overlay.title("Sort Options")
-            self.overlay.geometry("500x300")
+            self.overlay.geometry("500x120")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
-            ##Finish Setting up UI
+            #Attributes
+            self.frame01 = Frame(self.overlay)
+            self.frame01.pack(fill=BOTH,pady=10)
 
+            self.frame02 = Frame(self.overlay)
+            self.frame02.pack(fill=BOTH,pady=10)
+
+            self.sorting = Label(self.frame01, text="Sort: ",font=("Fixedsys",17))
+            self.sorting.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            var1 = StringVar()
+            options = ["Test1", "Test2"]
+            self.sort_selection = OptionMenu(self.frame01, var1, *options)
+            self.sort_selection.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            self.speed = Label(self.frame02, text="Speed: ",font=("Fixedsys",17))
+            self.speed.pack(side=LEFT, fill=X,expand=True,padx=10)
+
+            self.speed_scale = Scale(self.frame02,from_=-50,to=50,orient=HORIZONTAL)
+            self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
+            self.speed_scale.set(0)
+            
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)
         sort_options.__instance -= 1 # Decrements private attribute __instance.

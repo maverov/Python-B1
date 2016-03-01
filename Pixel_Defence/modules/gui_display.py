@@ -402,9 +402,6 @@ class Game_Window(Window): # Inherits class Window.
         
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
         
-        image = ImageGrab.grab().crop((data[0]+3,data[1],data[0]+900,data[1]+627))
-        image.save("./images/game_waves/wave_"+str(self.wave)+".png")
-        
         wave_info = [self.wave,self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")

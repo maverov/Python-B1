@@ -9,9 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
-import os,sys,time,pickle,pygame
-
-from threading import *
+import os,sys,time,pickle,pygame,queue,threading
 
 pygame.init()
 button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
@@ -271,9 +269,6 @@ class Game_Window(Window): # Inherits class Window.
         '''Displays all the widgets for the main Tower Defence Game.'''
         pygame.mixer.Sound.play(button_accept)
 
-        for file in os.listdir("./images/game_waves"):
-            os.remove("./images/game_waves/"+file)
-
         if os.path.isfile("./modules/wave_settings.pixel"): # Check is file exsists
             os.remove("./modules/wave_settings.pixel") #Remove wave_settings file
         else:
@@ -375,38 +370,45 @@ class Game_Window(Window): # Inherits class Window.
 
     def wave_start(self):
         pygame.mixer.Sound.play(button_accept)
-
-        no_mobs = (self.wave*4)
+        self.round_button.config(state=DISABLED)
+        self.round_button.update()
+        
+        self.no_mobs = (self.wave*4)
         if self.wave % 20 == 0:
-            no_mobs = 1
-        if no_mobs > 100:
-            no_mobs == 100
+            self.no_mobs = 1
+        if self.no_mobs > 100:
+            self.no_mobs == 100
             
         self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
         self.mob_move_route = self.mob_move_route.path
 
-        self.mob_wave = []
-        for i in range(no_mobs):
-            class_object = Animate_Wave(self.game_canvas, self.game_grid, self.health, self.health_label, self.mob_move_route)
-            self.mob_wave.append(class_object)
+        self.move_mobs_stop = threading.Event()
+        
+        self.move_mobs = threading.Thread(target=self.animate_wave)
+        self.move_mobs.start()
 
-        for mob in self.mob_wave:
-            mob.move_mob()
+        self.queue = queue.Queue()
+        Thread_Tasks(self.queue).start()
 
+        self.parent.after(100,self.queue_processes)
+            
         self.wave += 1
         self.wave_end()
 
     def wave_end(self):
-        
+        self.move_mobs_stop.set()
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
         
         wave_info = [self.wave,self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
-        
+
         self.round_button.config(text="Start Wave "+str(self.wave))
+        self.round_button.config(state=NORMAL)
+        self.round_button.update()
 
     def gameover(self):
+        self.move_mobs_stop.set()
         self.game_canvas.delete(ALL)
         self.game_canvas.create_text(300,300,text="GAME OVER",fill="white",font=("Fixedsys",30))
         self.game_canvas.update()
@@ -425,39 +427,48 @@ class Game_Window(Window): # Inherits class Window.
         self.parent.unbind("<Escape>")
         self.main.pack()
 
-###################################################################################################################################
-class Animate_Wave:
-                  
-    def __init__(self, canvas, grid, health, health_label, route):
-        self.canvas = canvas
-        self.grid = grid
-        self.health_label = health_label
-        self.route = route
-        self.health = health
-
-    def move_mob(self):
-        self.path = self.route
-        self.path_length = 0
-
-        for each in self.path:
-            self.path_length += 1
-            self.previous = self.route[self.path_length-2]
-            colour = self.canvas.itemcget(self.grid.main_grid[(each[1],each[0])],"fill")
-            previous_colour = self.canvas.itemcget(self.grid.main_grid[(self.previous[1],self.previous[0])],"fill")
+    def queue_processes(self):
+        try:
+            pass
+        except queue.Empty:
+            self.parent.after(100,self.queue_processing)
             
-            if  colour == "blue" or colour == "red":
-                if colour == "blue":
-                    self.health -= 10
-                    self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
-                    self.health_label.config(text="Health: "+str(self.health))
-                    self.canvas.update_idletasks()
-            else:
-                if previous_colour != "red":
-                    self.canvas.itemconfig(self.grid.main_grid[(self.previous[1],self.previous[0])],fill="")
-                self.canvas.itemconfig(self.grid.main_grid[(each[1],each[0])],fill="black")
-                self.canvas.update_idletasks()
-            time.sleep(0.03)
+
+    def animate_wave(self):
+        self.path = self.mob_move_route
+        self.path_length = 0
+        for i in range(self.no_mobs):
+            for each in self.path:
+                self.path_length += 1
+                try:
+                    self.previous = self.mob_move_route[self.path_length-2]
+                except:
+                    break
+                colour = self.game_canvas.itemcget(self.game_grid.main_grid[(each[1],each[0])],"fill")
+                previous_colour = self.game_canvas.itemcget(self.game_grid.main_grid[(self.previous[1],self.previous[0])],"fill")
                 
+                if  colour == "blue" or colour == "red":
+                    if colour == "blue":
+                        self.health -= 10
+                        if self.health <= 0:
+                            self.gameover()
+                        self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                        self.health_label.config(text="Health: "+str(self.health))
+                        self.game_canvas.update_idletasks()
+                else:
+                    if previous_colour != "red":
+                        self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                    self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
+                    self.game_canvas.update_idletasks()
+                time.sleep(0.03)
+            
+###################################################################################################################################
+class Thread_Tasks(threading.Thread):
+
+    def __init__(self,queue_data):
+        threading.Thread.__init__(self)
+        self.queue = queue_data
+        
 ###################################################################################################################################
 class Game_Overlay:
     '''Inherits the attributes and method of "Window".'''

@@ -86,6 +86,11 @@ class Main(Window): # Inherits class Window.
                            command=self.game_credits)
         self.info.pack(pady=10, fill=X)
 
+        #Revert constant back
+        constant_data = open("./modules/constants.pixel","w")
+        constant_data.write("100\n")
+        constant_data.write("1000")
+        #End
 
     def game_credits(self):
         '''Sets the credits for the game giving credit to online creator and resources we used.'''
@@ -265,8 +270,15 @@ class Options(Window): # Inherits class Window.
 class Game_Constants():
 
      def __init__(self):
-         self.health = 100
-         self.money = 1000
+         constant_data = open("./modules/constants.pixel","r")
+         constant_info = []
+
+         for line in constant_data:
+            constant_info.append(line)
+
+         self.health = int(constant_info[0])
+         self.money = int(constant_info[1])
+
          self.wave = 1
 
 ####################################################################################################################################

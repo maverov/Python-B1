@@ -4,6 +4,8 @@ from tkinter import *
 from tkinter.ttk import *
 import pygame
 
+from modules import gui_display
+
 class Cheat_Menu:
 
     __instance = 0
@@ -83,9 +85,13 @@ class Cheat_Menu:
             self.unlimited_toggle_button.config(text="Cheat ON")
             message = messagebox.showinfo("Activated", "Cheat Activated")
             self.unlimited_toggle_button.state(["disabled"])
+
+            constant_data = open("./modules/constants.pixel","w")
+            constant_data.write("999999\n")
+            constant_data.write("999999")
             #print("ON")
         else:
-            self.unlimited_toggle_button.config(text="Cheat OFF")
+            pass
             #print("OFF")
 
     def unlock_towers(self, state):
@@ -96,6 +102,7 @@ class Cheat_Menu:
             #print("ON")
         else:
             pass
+            #print("OFF")
 
     def instant_win(self, event=None):
         print("Activated")

@@ -64,6 +64,9 @@ class Cheat_Menu:
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
             self.speed_scale.set(0)
 
+            self.win = Button(self.frame03, text="Set", command=lambda: self.instant_win())
+            self.win.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+
             self.cheat_instant = Label(self.frame04, text="Unlock All Towers:",font=("Fixedsys",16))
             self.cheat_instant.pack(side=LEFT, fill=X,expand=True,padx=10)
 
@@ -83,7 +86,7 @@ class Cheat_Menu:
     def unlimited_toggle(self, state):
         if state.get() == 1:
             self.unlimited_toggle_button.config(text="Cheat ON")
-            message = messagebox.showinfo("Activated", "Cheat Activated")
+            message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
             self.unlimited_toggle_button.state(["disabled"])
 
             constant_data = open("./modules/constants.pixel","w")
@@ -97,7 +100,7 @@ class Cheat_Menu:
     def unlock_towers(self, state):
         if state.get() == 1:
             self.instant_toggle_button.config(text="Cheat ON")
-            message = messagebox.showinfo("Activated", "Cheat Activated")
+            message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
             self.instant_toggle_button.state(["disabled"])
             #print("ON")
         else:

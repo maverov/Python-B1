@@ -276,11 +276,10 @@ class Game_Constants():
          for line in constant_data:
             constant_info.append(line)
 
-         self.health = int(constant_info[0])
-         self.money = int(constant_info[1])
-
-         self.wave = 1
-
+         self.health = int(constant_info[0]) # Health
+         self.money = int(constant_info[1]) #Money
+        
+         self.speed = float(0.03) #Play speed
 ####################################################################################################################################
 class Game_Window(Window): # Inherits class Window.
     '''Inherits the attributes and method of "Window".'''
@@ -301,7 +300,7 @@ class Game_Window(Window): # Inherits class Window.
         
         self.health = initial_data.health
         self.money = initial_data.money
-        self.wave = initial_data.wave
+        self.wave = 1
 
         pygame.mixer.music.stop() # Cancels all music currently playing.
         pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
@@ -481,7 +480,10 @@ class Game_Window(Window): # Inherits class Window.
                         self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
                     self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
                     self.game_canvas.update_idletasks()
-                time.sleep(0.03)
+
+                initial_data = Game_Constants() #Connect to class
+                self.speed = initial_data.speed # Allow changable value for cheat manu
+                time.sleep(self.speed)
             
 ###################################################################################################################################
 class Thread_Tasks(threading.Thread):

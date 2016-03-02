@@ -87,8 +87,8 @@ class Cheat_Menu:
             self.unlimited_toggle_button.state(["disabled"])
 
             constant_data = open("./modules/constants.pixel","w")
-            constant_data.write("999999\n")
-            constant_data.write("999999")
+            constant_data.write("99999999\n")
+            constant_data.write("99999999")
             #print("ON")
         else:
             pass

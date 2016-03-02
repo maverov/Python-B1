@@ -57,7 +57,7 @@ class sort_options:
             
             self.overlay = Toplevel()
             self.overlay.title("Sort Options")
-            self.overlay.geometry("500x120")
+            self.overlay.geometry("500x160")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
@@ -67,6 +67,9 @@ class sort_options:
 
             self.frame02 = Frame(self.overlay)
             self.frame02.pack(fill=BOTH,pady=10)
+
+            self.frame03 = Frame(self.overlay)
+            self.frame03.pack(side=BOTTOM,fill=BOTH,pady=10)
 
             self.sorting = Label(self.frame01, text="Sort: ",font=("Fixedsys",17))
             self.sorting.pack(side=LEFT, fill=X,expand=True,padx=10)
@@ -82,6 +85,20 @@ class sort_options:
             self.speed_scale = Scale(self.frame02,from_=-50,to=50,orient=HORIZONTAL)
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
             self.speed_scale.set(0)
+
+            self.submit = Button(self.frame03,text="Submit",
+                             command=self.submitted)
+            self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
+
+            self.cancel = Button(self.frame03,text="Cancel",
+                                 command=self.cancel)
+            self.cancel.pack(side=LEFT,fill=X,expand=True,padx=10)
+
+    def submitted(self):
+        pass
+
+    def cancel(self):
+        pass
             
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)

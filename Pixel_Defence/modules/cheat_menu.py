@@ -25,7 +25,7 @@ class Cheat_Menu:
             self.overlay = Toplevel()
             self.overlay.title("Cheat Menu")
             self.overlay.resizable(0,0)
-            self.overlay.geometry("350x180")
+            self.overlay.geometry("350x190")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 

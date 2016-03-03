@@ -60,12 +60,12 @@ class Cheat_Menu:
             self.speed_hack = Label(self.frame03, text="Speed Hack: ",font=("Fixedsys",16))
             self.speed_hack.pack(side=LEFT, fill=X,expand=True,padx=10)
 
-            self.speed_scale = Scale(self.frame03,from_=-50,to=50,orient=HORIZONTAL)
+            self.speed_scale = Scale(self.frame03,from_=0.01,to=1.00,orient=HORIZONTAL)
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
-            self.speed_scale.set(0)
+            self.speed_scale.set(0.03)
 
-            self.win = Button(self.frame03, text="Set", command=lambda: self.instant_win())
-            self.win.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+            self.speed_set = Button(self.frame03, text="Set", command=lambda: self.set_speed())
+            self.speed_set.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
 
             self.cheat_instant = Label(self.frame04, text="Unlock All Towers:",font=("Fixedsys",16))
             self.cheat_instant.pack(side=LEFT, fill=X,expand=True,padx=10)
@@ -91,11 +91,29 @@ class Cheat_Menu:
 
             constant_data = open("./modules/constants.pixel","w")
             constant_data.write("99999999\n")
-            constant_data.write("99999999")
+            constant_data.write("99999999\n")
+            constant_data.write(str(self.speed_scale.get()))
             #print("ON")
         else:
             pass
             #print("OFF")
+
+    def set_speed(self):
+        constant_data = open("./modules/constants.pixel","r")
+        tmplist = []
+        
+        for line in constant_data:
+            tmplist.append(line)
+            
+        health = tmplist[0]
+        money = tmplist[1]
+        speed = self.speed_scale.get()
+            
+        constant_data = open("./modules/constants.pixel","w")
+        constant_data.write(str(health))
+        constant_data.write(str(money))
+        constant_data.write(str(speed))
+        #print(self.speed_scale.get())
 
     def unlock_towers(self, state):
         if state.get() == 1:

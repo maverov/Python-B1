@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter.ttk import *
 import pygame
 
-from modules import gui_display
+#from modules import gui_display
 
 class Cheat_Menu:
 

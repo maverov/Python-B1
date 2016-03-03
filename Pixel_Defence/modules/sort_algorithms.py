@@ -102,18 +102,11 @@ class sort_options():
                              command=self.submitted)
             self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-            self.cancel = Button(self.frame03,text="Cancel",font=("Fixedsys",17),
-                                 command=self.cancel)
-            self.cancel.pack(side=LEFT,fill=X,expand=True,padx=10)
-
     def submitted(self):
         speed = self.speed_scale.get()
 
         speed_file = open("./modules/sort_speed.pixel", "w")
         speed_file.write(str(speed/50))
-
-    def cancel(self):
-        pass
             
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)

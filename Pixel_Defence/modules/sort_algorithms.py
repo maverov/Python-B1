@@ -75,7 +75,7 @@ class sort_options:
             self.sorting.pack(side=LEFT, fill=X,expand=True,padx=10)
 
             var1 = StringVar()
-            options = ["Ascending", "Descending"]
+            options = ["", "Ascending", "Descending"]
             self.sort_selection = OptionMenu(self.frame01, var1, *options)
             self.sort_selection.pack(side=LEFT, fill=X,expand=True,padx=10)
 

@@ -6,6 +6,14 @@ from tkinter import *
 class BubbleSort:
 
     def __init__(self,canvas,sort_grid):
+
+        speed_file = open("./modules/sort_speed.pixel", "r")
+        tmplist = []
+
+        for line in speed_file:
+            tmplist.append(line)
+        speed = float(tmplist[0])
+        
         self.canvas = canvas
         self.sort_grid = sort_grid
         
@@ -29,7 +37,7 @@ class BubbleSort:
                 self.fill_square(colour_list[j],j)
                 self.fill_square(colour_list[j+1],j+1)
                 self.canvas.update_idletasks()
-                time.sleep(0.1)
+                time.sleep(speed)
 
     def fill_square(self,colour,j):
         if colour == 1:
@@ -39,7 +47,7 @@ class BubbleSort:
         else:
             self.canvas.itemconfig(self.sort_grid[(j,0)],fill="")
 
-class sort_options:
+class sort_options():
 
     __instance = 0
     
@@ -99,7 +107,10 @@ class sort_options:
             self.cancel.pack(side=LEFT,fill=X,expand=True,padx=10)
 
     def submitted(self):
-        print(self.speed_scale.get()/50)
+        speed = self.speed_scale.get()
+
+        speed_file = open("./modules/sort_speed.pixel", "w")
+        speed_file.write(str(speed/50))
 
     def cancel(self):
         pass

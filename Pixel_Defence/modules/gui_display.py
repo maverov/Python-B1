@@ -292,6 +292,9 @@ class Game_Window(Window): # Inherits class Window.
             os.remove("./modules/wave_settings.pixel") #Remove wave_settings file
         else:
             wave_data = open("./modules/wave_settings.pixel","w") # Create file
+
+        sort_speed = open("./modules/sort_speed.pixel","w")
+        sort_speed.write(str(0.03))
         
         Window.__init__(self,parent) # Inherets the attributes and methods from class Window
 

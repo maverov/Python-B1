@@ -1,7 +1,7 @@
 import time
 import pygame
-from tkinter import *
 from tkinter.ttk import *
+from tkinter import *
 
 class BubbleSort:
 
@@ -55,47 +55,51 @@ class sort_options:
             sort_options.__instance += 1 # Increments private attribute __instance.
             pygame.mixer.Sound.play(self.button_accept)
             
-            self.overlay = Toplevel()
+            self.overlay = Toplevel(bg="#666666")
             self.overlay.title("Sort Options")
-            self.overlay.geometry("500x160")
+            self.overlay.resizable(0,0)
+            self.overlay.geometry("500x200")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
             #Attributes
-            self.frame01 = Frame(self.overlay)
+            self.frame01 = Frame(self.overlay,bg="#666666")
             self.frame01.pack(fill=BOTH,pady=10)
 
-            self.frame02 = Frame(self.overlay)
+            self.frame02 = Frame(self.overlay,bg="#666666")
             self.frame02.pack(fill=BOTH,pady=10)
 
-            self.frame03 = Frame(self.overlay)
+            self.frame03 = Frame(self.overlay,bg="#666666")
             self.frame03.pack(side=BOTTOM,fill=BOTH,pady=10)
 
-            self.sorting = Label(self.frame01, text="Sort: ",font=("Fixedsys",17))
-            self.sorting.pack(side=LEFT, fill=X,expand=True,padx=10)
+            self.sorting = Label(self.frame01, text="Sort: ",font=("Fixedsys",17),bg="#666666",fg="white")
+            self.sorting.pack(side=LEFT,fill=X,padx=10)
 
             var1 = StringVar()
-            options = ["", "Ascending", "Descending"]
+            options = ["Ascending", "Descending"]
             self.sort_selection = OptionMenu(self.frame01, var1, *options)
             self.sort_selection.pack(side=LEFT, fill=X,expand=True,padx=10)
 
-            self.speed = Label(self.frame02, text="Speed: ",font=("Fixedsys",17))
-            self.speed.pack(side=LEFT, fill=X,expand=True,padx=10)
+            self.sort_selection.config(font=("Fixedsys",17))
+            self.sort_selection.nametowidget(self.sort_selection.menuname).config(font=("Fixedsys",17))
 
-            self.speed_scale = Scale(self.frame02,from_=-50,to=50,orient=HORIZONTAL)
+            self.speed = Label(self.frame02, text="Speed: ",font=("Fixedsys",17),bg="#666666",fg="white")
+            self.speed.pack(side=LEFT,fill=X,padx=10)
+
+            self.speed_scale = Scale(self.frame02,from_=0,to=50,orient=HORIZONTAL,font=("Fixedsys",17),bg="#666666",fg="white")
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
-            self.speed_scale.set(0)
+            self.speed_scale.set(25)
 
-            self.submit = Button(self.frame03,text="Submit",
+            self.submit = Button(self.frame03,text="Submit",font=("Fixedsys",17),
                              command=self.submitted)
             self.submit.pack(side=LEFT,fill=X,expand=True,padx=10)
 
-            self.cancel = Button(self.frame03,text="Cancel",
+            self.cancel = Button(self.frame03,text="Cancel",font=("Fixedsys",17),
                                  command=self.cancel)
             self.cancel.pack(side=LEFT,fill=X,expand=True,padx=10)
 
     def submitted(self):
-        pass
+        print(self.speed_scale.get()/50)
 
     def cancel(self):
         pass

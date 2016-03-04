@@ -29,7 +29,7 @@ class Window:
         self.parent.title("PIXEL TD") # Edits the title of the main window.
         self.parent.configure(background="#666666")
         self.parent.protocol("WM_DELETE_WINDOW",self.close)
-        self.parent.wm_iconbitmap("./images/favicon.ico") # Changes the icon of Tkinter window (removes feather).
+        self.parent.wm_iconbitmap("./images/logo.ico") # Changes the icon of Tkinter window (removes feather).
         self.parent.geometry("%dx%d+%d+%d" % (self.size[0],self.size[1],self.x,self.y)) # Sets resolution to tuple.
         self.parent.resizable(0,0) # Prevents window from resizing.
         self.current_settings = pickle.load(open("./modules/settings.pixel","rb"))
@@ -88,8 +88,8 @@ class Main(Window): # Inherits class Window.
 
         #Revert constant back
         constant_data = open("./modules/constants.pixel","w")
-        constant_data.write("100\n")
-        constant_data.write("1000")
+        constant_data.write("50\n")
+        constant_data.write("100")
         #End
 
     def game_credits(self):
@@ -144,16 +144,19 @@ class Options(Window): # Inherits class Window.
         self.main_frame.pack(side=LEFT,fill=BOTH,expand=True)
     
         self.frame01 = Frame(self.main_frame,bg="#666666")
-        self.frame01.pack(fill=BOTH,pady=30)
+        self.frame01.pack(fill=BOTH,pady=25)
 
         self.frame02 = Frame(self.main_frame,bg="#666666")
-        self.frame02.pack(fill=BOTH,pady=30)
+        self.frame02.pack(fill=BOTH,pady=25)
 
         self.frame03 = Frame(self.main_frame,bg="#666666")
-        self.frame03.pack(fill=BOTH,pady=30)
+        self.frame03.pack(fill=BOTH,pady=25)
 
         self.frame04 = Frame(self.main_frame,bg="#666666")
-        self.frame04.pack(fill=BOTH,pady=30)
+        self.frame04.pack(fill=BOTH,pady=25)
+
+        self.frame06 = Frame(self.main_frame,bg="#666666")
+        self.frame06.pack(fill=BOTH,pady=25)
         
         self.frame05 = Frame(self.main_frame,bg="#666666")
         self.frame05.pack(side=BOTTOM,fill=BOTH,pady=10)
@@ -208,6 +211,15 @@ class Options(Window): # Inherits class Window.
         self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red",
                                         variable=self.cheat_option, command=lambda: self.cheat_menu(self.cheat_option))
         self.cheat_button.pack(side=LEFT,fill=X,padx=10)
+
+        ##Cristian Ghita Tutorial button
+        self.tutorial_label = Label(self.frame06, text="Tutorial: ",font=("Fixedsys",18),bg="#666666", fg="white")
+        self.tutorial_label.pack(side=LEFT,fill=X,padx=10)
+        
+        self.tutorial_button = Button(self.frame06, text="Begin tutorial", font=("Fixedsys",18),
+                                      command=lambda: Tutorial_Window(self.parent,self.main_frame))
+        self.tutorial_button.pack(side=LEFT,fill=X,padx=10)
+        
 
     def cheat_menu(self, state):
         if state.get() == 1:
@@ -281,6 +293,348 @@ class Game_Constants():
         
          self.speed = float(0.03) #Play speed
 ####################################################################################################################################
+class Tutorial_Window(Window):
+    def __init__(self,parent,main):
+        pygame.mixer.Sound.play(button_accept)
+
+        if os.path.isfile("./modules/wave_settings.pixel"): # Check is file exsists
+            os.remove("./modules/wave_settings.pixel") #Remove wave_settings file
+        else:
+            wave_data = open("./modules/wave_settings.pixel","w")
+
+        sort_speed = open("./modules/sort_speed.pixel","w")
+        sort_speed.write(str(0.03))
+
+        self.tower_list = ['red','blue','green','yellow','purple','brown']
+        self.tower_cost_list = [50,100,250,500,750,5]
+        
+        Window.__init__(self,parent) # Inherets the attributes and methods from class Window
+
+        self.imageList()
+        initial_data = Game_Constants()
+
+        self.inst = 0
+        
+        self.health = initial_data.health
+        self.money = initial_data.money
+        self.wave = 'Tutorial'
+
+        pygame.mixer.music.stop() # Cancels all music currently playing.
+        pygame.mixer.music.load("./audio/bgm/biscuits.wav")# Plays song in first parameter.
+        pygame.mixer.music.set_volume(self.current_settings[2]/100)
+        pygame.mixer.music.play(-1)
+
+        self.main = main # Remebers frame binded to class so that it can be later restored.
+        self.main.pack_forget() # Forgets the main_frame. (Doesn't delete just hides it.)
+
+        self.parent.bind("<Escape>",self.main_menu)
+
+        # --- Widgets for Options interface. --- #
+        self.main_frame = Frame(self.parent) # Stores the frames, frame and display.
+        self.main_frame.pack(fill=BOTH, expand=True)
+
+        self.frame = Frame(self.main_frame,bg="#666666",relief=RIDGE)
+        self.frame.pack(fill=Y, side=RIGHT)
+
+        self.round_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.round_data.pack(fill=BOTH)
+
+        self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.sort_data.pack(fill=BOTH)
+        self.sort_data_left = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_left.pack(fill=BOTH)
+        self.sort_data_right = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_right.pack(fill=BOTH)
+
+        self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
+        self.button_data.pack(fill=BOTH)
+
+        self.tower_d1 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d2 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d3 = Frame(self.button_data, bg="#666666", relief=RIDGE)
+        self.tower_d3.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d2.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d1.pack(side=BOTTOM,fill=BOTH)
+
+        self.display = Frame(self.main_frame,bg="#666666")
+        self.display.pack(fill=BOTH,expand=True)
+        self.display_bottom = Frame(self.display,bg="#666666")
+        self.display_bottom.pack(side=BOTTOM)
+        self.display_bottom_l = Frame(self.display_bottom,bg="#666666")
+        self.display_bottom_l.pack(side=LEFT)
+        self.display_bottom_r = Frame(self.display_bottom,bg="#666666")
+        self.display_bottom_r.pack(side=RIGHT)
+
+        self.game_canvas = Canvas(self.display, bg="black")
+        self.game_canvas.pack(fill=BOTH,expand=True,padx=5,pady=5)
+        self.next_button = Button(self.display_bottom_r, text="Next",font=("Fixedsys",16),width=15,
+                                  bg="white", command=lambda: self.instruction('next'))
+        self.next_button.pack(side=BOTTOM,padx=10,pady=2)
+        self.back_button = Button(self.display_bottom_l, text="Back",font=("Fixedsys",16),width=15,
+                                  state = DISABLED,bg="#d1d1d1",command=lambda:self.instruction('back'))
+        self.back_button.pack(side=BOTTOM,padx=10,pady=2)
+
+        self.photo = Image.open("./images/maps/"+self.current_settings[0])
+        self.photo = self.photo.resize((700,600),Image.ANTIALIAS)
+        self.photo = ImageTk.PhotoImage(self.photo)
+        
+        self.game_canvas.create_image(0,0,image=self.photo,anchor=NW)
+
+        self.textTutorial = self.game_canvas.create_text(333,250,text='--------------------------------\nThe main idea of the game is to\nkill the monsters that will try to reach\nyour town entrance. In order to do that\nyou have to place towers that will\nfire at them. Towers will cost money\nand you can unlock new towers\n by collecting dropped parts from the killed monsters.\nYou can also build barricades\nto make the monsters have a longer path\nso your turrets will have more time to\nkill them.\n--------------------------------',
+                                                         font=("Fixedsys",16),justify=CENTER)
+        self.text1 = self.game_canvas.create_text(128,20,text="", font=("Fixedsys",16))
+        self.text2 = self.game_canvas.create_text(570,540,text="", font=("Fixedsys",16))
+        self.text3 = self.game_canvas.create_text(560,65,text="",font=("Fixedsys",16))
+        self.text4 = self.game_canvas.create_text(495,99,text="",font=("Fixedsys",16),justify=CENTER)
+        self.text5 = self.game_canvas.create_text(455,390,text="",font=("Fixedsys",16),justify=CENTER)
+        self.text6 = self.game_canvas.create_text(465,460,text="",font=("Fixedsys",16),justify=CENTER)
+        self.text7 = self.game_canvas.create_text(340,250,text="",font=("Fixedsys",25),justify=CENTER)
+        self.text8 = self.game_canvas.create_text(345,350,text="",font=("Fixedsys",16),justify=CENTER)
+
+        # -- Game_Option Frame -- #
+        message_health = "Health: "+str(self.health)
+        self.health_label = Label(self.round_data,text=message_health,font=("Fixedsys",14),
+                                  bg="#666666",fg="white")
+        self.health_label.pack(fill=X)
+
+        self.message_money = "Money: "+str(self.money)
+        self.money_label = Label(self.round_data,text=self.message_money,font=("Fixedsys",14),
+                                 bg="#666666",fg="white")
+        self.money_label.pack(fill=X)
+
+        self.seperator = ttk.Separator(self.round_data).pack(fill=X)
+                                                        
+        self.round_button = Button(self.round_data, text="Start Wave "+str(self.wave), font=("Fixedsys",14),
+                              command=lambda: self.wave_start(),state=DISABLED)
+        self.round_button.pack(fill=X,padx=5,pady=5)
+
+        self.stats = Button(self.round_data, text="Game Stats", font=("Fixedsys",14),
+                              command=lambda: Game_Overlay(),state=DISABLED)
+        self.stats.pack(fill=X,padx=5,pady=5)
+
+        self.main_menu_button = Button(self.round_data, text="Option Menu", font=("Fixedsys",14),
+                              command=lambda: self.main_menu())
+        self.main_menu_button.pack(fill=X,padx=5,pady=5)
+
+        self.seperator = ttk.Separator(self.round_data).pack(fill=X)
+
+        self.sort_canvas = Canvas(self.sort_data_left, width=90, height=170)
+        self.sort_canvas.pack(padx=25,pady=5)
+
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3],True)
+
+        self.bubble_sort = Button(self.sort_data_right, text="Bubble Sort", font=("Fixedsys",14),
+                                  state=DISABLED,command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
+        self.bubble_sort.pack(fill=X,padx=5,pady=5)
+
+        self.quick_sort = Button(self.sort_data_right, text="Quick Sort", font=("Fixedsys",14),
+                                 state=DISABLED,command=lambda: self.s_options())
+        self.quick_sort.pack(fill=X, padx=5, pady=5)
+
+        self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
+
+        self.turret1 = Button(self.tower_d1, text="T1\n"+str(self.tower_cost_list[0]), font=("Fixedsys",14),width=8,height=3,
+                              state=DISABLED,command=lambda: self.set_ID(0))
+        self.turret1.pack(side=LEFT,padx=15,pady=3)
+        
+        self.turret2 = Button(self.tower_d1, text="T2\n"+str(self.tower_cost_list[1]), font=("Fixedsys",14),width=8,height=3,
+                              state=DISABLED,command=lambda: self.set_ID(1))
+        self.turret2.pack(side=RIGHT,padx=15,pady=3)
+        self.turret3 = Button(self.tower_d2, text="T3\n"+str(self.tower_cost_list[2]), font=("Fixedsys",14),width=8,height=3,
+                              state=DISABLED,command=lambda: self.set_ID(2))
+        self.turret3.pack(side=LEFT,padx=15,pady=3)
+        self.turret4 = Button(self.tower_d2, text="T4\n"+str(self.tower_cost_list[3]), font=("Fixedsys",14),width=8,height=3,
+                              state=DISABLED,command=lambda: self.set_ID(3))
+        self.turret4.pack(side=RIGHT,padx=15,pady=3)
+        self.turret5 = Button(self.tower_d3, text="T5\n"+str(self.tower_cost_list[4]), font=("Fixedsys",14),height=3,width=8,
+                              state=DISABLED,command=lambda: self.set_ID(4))
+        self.turret5.pack(side=LEFT,padx=15,pady=3)
+        self.barricade6 = Button(self.tower_d3, text="Ba\n"+str(self.tower_cost_list[5]), font=("Fixedsys",14),height=3,width=8,
+                                 state=DISABLED,command=lambda: self.set_ID(5))
+        self.barricade6.pack(side=RIGHT,padx=15,pady=3)
+
+    def instruction(self, order):
+        if order == 'next':
+            self.inst += 1
+        elif order == 'back' and self.inst-1>=0:
+            self.inst -= 1
+        if self.inst > 0:
+            self.back_button.config(state = NORMAL, bg='white')
+        else:
+            self.back_button.config(state=DISABLED, bg='#d1d1d1')
+        if self.inst <7:
+            self.next_button.config(state=NORMAL,bg='white')
+        else:
+            self.next_button.config(state=DISABLED,bg='#d1d1d1')
+        if self.inst == 0:
+            self.game_canvas.itemconfig(self.text1,text='')
+            self.game_canvas.itemconfig(self.textTutorial, text='--------------------------------\nThe main idea of the game is to\nkill the monsters that will try to reach\nyour town entrance. In order to do that\nyou have to place towers that will\nfire at them. Towers will cost money\nand you can unlock new towers\n by collecting dropped parts from the killed monsters.\nYou can also build barricades\nto make the monsters have a longer path\nso your turrets will have more time to\nkill them.\n--------------------------------')
+        elif self.inst == 1:
+            self.game_canvas.itemconfig(self.text1,text="<-- This is where the\n   monsters will spawn")
+            self.game_canvas.itemconfig(self.textTutorial,text="")
+            self.game_canvas.itemconfig(self.text2,text="")
+        elif self.inst == 2:
+            self.game_canvas.itemconfig(self.text1,text='')
+            self.game_canvas.itemconfig(self.text2,text="This is where they\n  will head to  -->")
+            self.round_button.config(state=DISABLED,bg='#F0F0ED')
+            self.game_canvas.itemconfig(self.text3,text='')
+        elif self.inst == 3:
+            self.game_canvas.itemconfig(self.text2,text='')
+            self.game_canvas.itemconfig(self.text3,text="This button will send the -->\n  next wave of monsters\n        Test it!")
+            self.stats.config(state=DISABLED,bg='#F0F0ED')
+            self.round_button.config(state=NORMAL,bg='green')
+            self.game_canvas.itemconfig(self.text4,text='')
+        elif self.inst == 4:
+            self.game_canvas.itemconfig(self.text3,text='')
+            self.game_canvas.itemconfig(self.text4,text="Your stats will get recorded after each -->\nwave. You can visualise them here ")
+            self.round_button.config(state=DISABLED,bg='#F0F0ED')
+            self.bubble_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.quick_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.stats.config(state=NORMAL,bg='green')
+            self.game_canvas.itemconfig(self.text5,text='')
+        elif self.inst == 5:
+            self.stats.config(state=DISABLED,bg='#F0F0ED')
+            self.game_canvas.itemconfig(self.text4,text='')
+            self.game_canvas.itemconfig(self.text6,text='')
+            self.bubble_sort.config(state=NORMAL,bg='green')
+            self.quick_sort.config(state=NORMAL,bg='green')
+            self.turret1.config(state=DISABLED,bg='#F0F0ED')
+            self.turret2.config(bg='#F0F0ED')
+            self.turret3.config(bg='#F0F0ED')
+            self.turret4.config(bg='#F0F0ED')
+            self.turret5.config(bg='#F0F0ED')
+            self.barricade6.config(state=DISABLED,bg='#F0F0ED')
+            self.game_canvas.itemconfig(self.text5,text="When you kill monsters there are chances to drop  -->\ntower parts. These tower parts if\nsorted can unlock you a new tower to construct.\nYou have 2 sort modes - use whichever you want!")
+        elif self.inst == 6:
+            self.bubble_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.quick_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.game_canvas.itemconfig(self.text6,text='This is the building menu. In order to build\nsomething you have to select a tile then press\n the desired button. You can build barricades -->\nthat monsters will have to avoid.\nSelect a tile and build something.')
+            self.game_canvas.itemconfig(self.text5,text='')
+            self.turret1.config(state=NORMAL,bg='green')
+            self.turret2.config(bg='green')
+            self.turret3.config(bg='green')
+            self.turret4.config(bg='green')
+            self.turret5.config(bg='green')
+            self.barricade6.config(state=NORMAL,bg='green')
+            self.game_canvas.itemconfig(self.text7,text='')
+            self.game_canvas.itemconfig(self.text8,text='')
+            self.main_menu_button.config(bg='#F0F0ED')
+        elif self.inst == 7:
+            self.turret1.config(state=DISABLED,bg='#F0F0ED')
+            self.turret2.config(bg='#F0F0ED')
+            self.turret3.config(bg='#F0F0ED')
+            self.turret4.config(bg='#F0F0ED')
+            self.turret5.config(bg='#F0F0ED')
+            self.barricade6.config(state=DISABLED,bg='#F0F0ED')
+            self.game_canvas.itemconfig(self.text6,text='')
+            self.game_canvas.itemconfig(self.text7,text="You've finished\nthe tutorial!\nGood job!\nGL & HF")
+            self.game_canvas.itemconfig(self.text8,text="Press 'Option Menu' button to exit the tutorial.")
+            self.main_menu_button.config(bg='green')
+            
+
+    def set_ID(self, ID):
+        self.last_button = ID
+        print(self.tower_list[self.last_button]+" tower placed on: ")
+        print(self.game_grid.last_barricade)
+        if self.money-self.tower_cost_list[self.last_button] >= 0:
+            self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[self.game_grid.last_barricade]
+                                           ,fill=self.tower_list[self.last_button])
+            self.money -= self.tower_cost_list[self.last_button]
+            self.money_label.config(text="Money: "+str(self.money))
+            self.money_label.pack(fill=X)
+
+    def main_menu(self, event=None):
+        '''Returns the user to the main menu.'''
+        pygame.mixer.Sound.play(button_deny)
+        pygame.mixer.music.stop()# Cancels all current sounds being played
+        pygame.mixer.music.load("./audio/bgm/jelly_castle_retro_remix.wav")# Starts song in first parameter.
+        pygame.mixer.music.set_volume(self.current_settings[2]/100)
+        pygame.mixer.music.play(-1)
+        self.main_frame.destroy()
+        self.parent.unbind("<Escape>")
+        self.main.pack()
+
+    def wave_start(self):
+        pygame.mixer.Sound.play(button_accept)
+        self.round_button.config(state=DISABLED)
+        self.next_button.config(state=DISABLED)
+        self.back_button.config(state=DISABLED)
+        self.round_button.update()
+        
+        self.no_mobs = (1*4)
+        if 1 % 20 == 0:
+            self.no_mobs = 1
+        if self.no_mobs > 100:
+            self.no_mobs == 100
+            
+        self.mob_move_route = search_algorithms.Search_Path(self.game_canvas,self.game_grid.main_grid)
+        self.mob_move_route = self.mob_move_route.path
+
+        self.move_mobs_stop = threading.Event()
+        
+        self.move_mobs = threading.Thread(target=self.animate_wave)
+        self.move_mobs.start()
+
+        self.queue = queue.Queue()
+        Thread_Tasks(self.queue).start()
+
+        self.parent.after(100,self.queue_processes)
+
+        self.wave_end()
+
+    def animate_wave(self):
+        self.path = self.mob_move_route
+        self.path_length = 0
+        for i in range(self.no_mobs):
+            for each in self.path:
+                self.path_length += 1
+                try:
+                    self.previous = self.mob_move_route[self.path_length-2]
+                except:
+                    break
+                colour = self.game_canvas.itemcget(self.game_grid.main_grid[(each[1],each[0])],"fill")
+                previous_colour = self.game_canvas.itemcget(self.game_grid.main_grid[(self.previous[1],self.previous[0])],"fill")
+                
+                if  colour == "blue" or colour == "red":
+                    if colour == "blue":
+                        self.health -= 10
+                        self.back_button.config(state=NORMAL)
+                        self.next_button.config(state=NORMAL)
+                        self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[(17,21)],fill="blue")
+                        if self.health <= 0:
+                            self.gameover()
+                        self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                        self.health_label.config(text="Health: "+str(self.health))
+                        self.game_canvas.update_idletasks()
+                else:
+                    if previous_colour != "red":
+                        self.game_canvas.itemconfig(self.game_grid.main_grid[(self.previous[1],self.previous[0])],fill="")
+                    self.game_canvas.itemconfig(self.game_grid.main_grid[(each[1],each[0])],fill="black")
+                    self.game_canvas.update_idletasks()
+            
+                initial_data = Game_Constants() #Connect to class
+                self.speed = initial_data.speed # Allow changable value for cheat manu
+                time.sleep(0.07)
+
+    def wave_end(self):
+        self.move_mobs_stop.set()
+        data = [self.parent.winfo_x(),self.parent.winfo_y()]
+        
+        wave_info = [self.wave,self.health,self.money]
+        wave_data = open("./modules/wave_settings.pixel","a")
+        wave_data.write(str(wave_info)+"\n")
+
+    def bubble(self, canvas, sort_grid):
+        sort_algorithms.BubbleSort(canvas,sort_grid)
+
+    def queue_processes(self):
+        try:
+            pass
+        except queue.Empty:
+            self.parent.after(100,self.queue_processing)
+
+
+###########################################################################################################################
 class Game_Window(Window): # Inherits class Window.
     '''Inherits the attributes and method of "Window".'''
 
@@ -356,6 +710,7 @@ class Game_Window(Window): # Inherits class Window.
         self.photo = ImageTk.PhotoImage(self.photo)
         
         self.game_canvas.create_image(0,0,image=self.photo,anchor=NW)
+        
 
         # -- Game_Option Frame -- #
         message_health = "Health: "+str(self.health)
@@ -395,7 +750,7 @@ class Game_Window(Window): # Inherits class Window.
                                  command=lambda: self.s_options())
         self.quick_sort.pack(fill=X, padx=5, pady=5)
 
-        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3],False)
 
         self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
 

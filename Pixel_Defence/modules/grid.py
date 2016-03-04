@@ -11,18 +11,22 @@ from modules import search_algorithms
 import random
 
 class Grid:
-    def __init__(self,canvas01,canvas02,n_barricades):
+    def __init__(self,canvas01,canvas02,n_barricades,tutorial):
         self.canvas01 = canvas01
         self.canvas02 = canvas02
         self.n_barricades = n_barricades
 
         self.previous_barricade = (0,0)
-
-        self.main_grid = self.generate_grid(self.canvas01,100,100,31,31,22,19,"",True)
-        self.sort_grid = self.generate_grid(self.canvas02,4, 1, 90,42.5,1,4,"black",False)
+        if tutorial == False:
+            self.main_grid = self.generate_grid(self.canvas01,100,100,31,31,22,19,"",True,False)
+            self.canvas01.itemconfig(self.main_grid[(18,21)],fill="blue")
+        else:
+            self.main_grid = self.generate_grid(self.canvas01,100,100,31,31,22,19,"",False,True)
+            self.canvas01.itemconfig(self.main_grid[(17,21)],fill="blue")
+        self.sort_grid = self.generate_grid(self.canvas02,4, 1, 90,42.5,1,4,"black",False,False)
 
         self.canvas01.itemconfig(self.main_grid[(0,0)],fill="red")
-        self.canvas01.itemconfig(self.main_grid[(18,21)],fill="blue")
+        #self.canvas01.itemconfig(self.main_grid[(18,21)],fill="blue")
 
         self.canvas02.itemconfig(self.sort_grid[(0,0)],fill="blue")
         self.canvas02.itemconfig(self.sort_grid[(1,0)],fill="red")
@@ -30,7 +34,7 @@ class Grid:
         self.canvas02.itemconfig(self.sort_grid[(3,0)],fill="blue")
 
     #Create Grid on Main Display
-    def generate_grid(self,canvas,rows,columns,cellwidth,cellheight,n_columns,n_rows,borders,add_event):
+    def generate_grid(self,canvas,rows,columns,cellwidth,cellheight,n_columns,n_rows,borders,add_event,tutorial):
         self.rect = {}
         for column in range(n_columns):
             for row in range(n_rows):
@@ -39,7 +43,7 @@ class Grid:
                 x2 = x1 + cellwidth
                 y2 = y1 + cellheight
                 self.rect[(row,column)] = canvas.create_rectangle(x1,y1,x2,y2,outline=borders,tags="self.rect")
-                if add_event == True:
+                if add_event == True or tutorial == True:
                     canvas.tag_bind(self.rect[(row,column)],"<ButtonPress-1>",lambda event, tile=(row,column): self.print_click(tile,event))
 
         if add_event == True:           

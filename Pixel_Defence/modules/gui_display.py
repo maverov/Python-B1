@@ -29,7 +29,7 @@ class Window:
         self.parent.title("PIXEL TD") # Edits the title of the main window.
         self.parent.configure(background="#666666")
         self.parent.protocol("WM_DELETE_WINDOW",self.close)
-        self.parent.wm_iconbitmap("./images/logo.ico") # Changes the icon of Tkinter window (removes feather).
+        self.parent.wm_iconbitmap("./images/favicon.ico") # Changes the icon of Tkinter window (removes feather).
         self.parent.geometry("%dx%d+%d+%d" % (self.size[0],self.size[1],self.x,self.y)) # Sets resolution to tuple.
         self.parent.resizable(0,0) # Prevents window from resizing.
         self.current_settings = pickle.load(open("./modules/settings.pixel","rb"))
@@ -88,8 +88,8 @@ class Main(Window): # Inherits class Window.
 
         #Revert constant back
         constant_data = open("./modules/constants.pixel","w")
-        constant_data.write("50\n")
-        constant_data.write("100")
+        constant_data.write("100\n")
+        constant_data.write("1000")
         #End
 
     def game_credits(self):

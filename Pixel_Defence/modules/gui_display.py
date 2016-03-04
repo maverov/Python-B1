@@ -295,6 +295,9 @@ class Game_Window(Window): # Inherits class Window.
 
         sort_speed = open("./modules/sort_speed.pixel","w")
         sort_speed.write(str(0.03))
+
+        self.tower_list = ['red','blue','green','yellow','purple','brown']
+        self.tower_cost_list = [50,100,250,500,750,5]
         
         Window.__init__(self,parent) # Inherets the attributes and methods from class Window
 
@@ -327,9 +330,20 @@ class Game_Window(Window): # Inherits class Window.
 
         self.sort_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.sort_data.pack(fill=BOTH)
+        self.sort_data_left = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_left.pack(fill=BOTH)
+        self.sort_data_right = Frame(self.sort_data, bg="#666666",relief=RIDGE)
+        self.sort_data_right.pack(fill=BOTH)
 
         self.button_data = Frame(self.frame,bg="#666666",relief=RIDGE)
         self.button_data.pack(fill=BOTH)
+
+        self.tower_d1 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d2 = Frame(self.button_data,bg="#666666",relief = RIDGE)
+        self.tower_d3 = Frame(self.button_data, bg="#666666", relief=RIDGE)
+        self.tower_d3.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d2.pack(side=BOTTOM,fill=BOTH)
+        self.tower_d1.pack(side=BOTTOM,fill=BOTH)
 
         self.display = Frame(self.main_frame,bg="#999999")
         self.display.pack(fill=BOTH,expand=True)
@@ -349,8 +363,8 @@ class Game_Window(Window): # Inherits class Window.
                                   bg="#666666",fg="white")
         self.health_label.pack(fill=X)
 
-        message_money = "Money: "+str(self.money)
-        self.money_label = Label(self.round_data,text=message_money,font=("Fixedsys",14),
+        self.message_money = "Money: "+str(self.money)
+        self.money_label = Label(self.round_data,text=self.message_money,font=("Fixedsys",14),
                                  bg="#666666",fg="white")
         self.money_label.pack(fill=X)
 
@@ -370,20 +384,52 @@ class Game_Window(Window): # Inherits class Window.
 
         self.seperator = ttk.Separator(self.round_data).pack(fill=X)
 
-        self.sort_canvas = Canvas(self.sort_data, width=190, height=355)
-        self.sort_canvas.pack(fill=Y,expand=True,padx=5,pady=5)
+        self.sort_canvas = Canvas(self.sort_data_left, width=90, height=170)
+        self.sort_canvas.pack(padx=25,pady=5)
 
-        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
-
-        self.seperator = ttk.Separator(self.sort_data).pack(fill=X)
-
-        self.bubble_sort = Button(self.button_data, text="Bubble Sort", font=("Fixedsys",14),
+        self.bubble_sort = Button(self.sort_data_right, text="Bubble Sort", font=("Fixedsys",14),
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
         self.bubble_sort.pack(fill=X,padx=5,pady=5)
 
-        self.sort_options = Button(self.button_data, text="Sort Options", font=("Fixedsys",14),
+        self.quick_sort = Button(self.sort_data_right, text="Quick Sort", font=("Fixedsys",14),
                                  command=lambda: self.s_options())
-        self.sort_options.pack(fill=X,padx=5,pady=5)
+        self.quick_sort.pack(fill=X, padx=5, pady=5)
+
+        self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3])
+
+        self.separator = ttk.Separator(self.sort_data).pack(side=BOTTOM,fill=X)
+
+        self.turret1 = Button(self.tower_d1, text="T1\n"+str(self.tower_cost_list[0]), font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(0))
+        self.turret1.pack(side=LEFT,padx=15,pady=3)
+        
+        self.turret2 = Button(self.tower_d1, text="T2\n"+str(self.tower_cost_list[1]), font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(1))
+        self.turret2.pack(side=RIGHT,padx=15,pady=3)
+        self.turret3 = Button(self.tower_d2, text="T3\n"+str(self.tower_cost_list[2]), font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(2))
+        self.turret3.pack(side=LEFT,padx=15,pady=3)
+        self.turret4 = Button(self.tower_d2, text="T4\n"+str(self.tower_cost_list[3]), font=("Fixedsys",14),width=8,height=3,
+                              command=lambda: self.set_ID(3))
+        self.turret4.pack(side=RIGHT,padx=15,pady=3)
+        self.turret5 = Button(self.tower_d3, text="T5\n"+str(self.tower_cost_list[4]), font=("Fixedsys",14),height=3,width=8,
+                              command=lambda: self.set_ID(4))
+        self.turret5.pack(side=LEFT,padx=15,pady=3)
+        self.barricade6 = Button(self.tower_d3, text="Ba\n"+str(self.tower_cost_list[5]), font=("Fixedsys",14),height=3,width=8,
+                                 command=lambda: self.set_ID(5))
+        self.barricade6.pack(side=RIGHT,padx=15,pady=3)
+
+    def set_ID(self, ID):
+        self.last_button = ID
+        print(self.tower_list[self.last_button]+" tower placed on: ")
+        print(self.game_grid.last_barricade)
+        if self.money-self.tower_cost_list[self.last_button] >= 0:
+            self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[self.game_grid.last_barricade]
+                                           ,fill=self.tower_list[self.last_button])
+            self.money -= self.tower_cost_list[self.last_button]
+            self.money_label.config(text="Money: "+str(self.money))
+            self.money_label.pack(fill=X)
+        
 
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)

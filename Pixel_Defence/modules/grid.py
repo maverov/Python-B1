@@ -16,8 +16,10 @@ class Grid:
         self.canvas02 = canvas02
         self.n_barricades = n_barricades
 
+        self.previous_barricade = (0,0)
+
         self.main_grid = self.generate_grid(self.canvas01,100,100,31,31,22,19,"",True)
-        self.sort_grid = self.generate_grid(self.canvas02,300,300,200,72,1,5,"black",False)
+        self.sort_grid = self.generate_grid(self.canvas02,4, 1, 90,42.5,1,4,"black",False)
 
         self.canvas01.itemconfig(self.main_grid[(0,0)],fill="red")
         self.canvas01.itemconfig(self.main_grid[(18,21)],fill="blue")
@@ -52,7 +54,11 @@ class Grid:
         
         return self.rect
 
-    def print_click(self,tile,event):
-        last_barricade = (tile[0],tile[1])
-        self.canvas01.itemconfig(self.main_grid[(tile[0],tile[1])],fill="brown")
+    def print_click(self,tile,event=None):
+        self.last_barricade = (tile[0],tile[1])
+        if self.last_barricade != self.previous_barricade:
+            self.canvas01.itemconfig(self.main_grid[(tile[0],tile[1])],outline="black")
+            self.canvas01.itemconfig(self.main_grid[self.previous_barricade], outline="")
+            self.previous_barricade = self.last_barricade
+        
         # Save last click into wave_settings.pixel - use to prevent None Error.

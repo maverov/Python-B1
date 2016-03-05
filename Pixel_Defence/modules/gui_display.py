@@ -70,21 +70,29 @@ class Main(Window): # Inherits class Window.
                                   bg="#666666",fg="white")
         self.title_banner.pack(pady=10)
 
+        ##Cristian Ghita Tutorial button
+        
+        self.tutorial_button = Button(self.frame, text="Begin tutorial", font=("Fixedsys",18),
+                                      command=lambda: Tutorial_Window(self.parent,self.frame))
+        self.tutorial_button.pack(fill=X,pady=3)
+
+        ##End
+
         self.game = Button(self.frame, text="Play", font=("Fixedsys",18),bg="green",#relief=FLAT,
                            command=lambda: Game_Window(self.parent,self.frame))
-        self.game.pack(pady=10, fill=X)
+        self.game.pack(pady=3, fill=X)
 
         self.options = Button(self.frame, text="Options", font=("Fixedsys",18),bg="sky blue",
                               command=lambda: Options(self.parent,self.frame))
-        self.options.pack(pady=10, fill=X)
+        self.options.pack(pady=3, fill=X)
 
         self.quit = Button(self.frame, text="Quit", font=("Fixedsys",18),bg="red",
                            command=self.close)
-        self.quit.pack(pady=10, fill=X)
+        self.quit.pack(pady=3, fill=X)
 
         self.info = Button(self.frame, bitmap="info", font=("Fixedsys",18),
                            command=self.game_credits)
-        self.info.pack(pady=10, fill=X)
+        self.info.pack(pady=3, fill=X)
 
         #Revert constant back
         constant_data = open("./modules/constants.pixel","w")
@@ -212,16 +220,7 @@ class Options(Window): # Inherits class Window.
         self.cheat_button = Checkbutton(self.frame04, text="Activate", font=("Fixedsys",18),bg="#666666",fg="red",
                                         variable=self.cheat_option, command=lambda: self.cheat_menu(self.cheat_option))
         self.cheat_button.pack(side=LEFT,fill=X,padx=10)
-
-        ##Cristian Ghita Tutorial button
-        self.tutorial_label = Label(self.frame06, text="Tutorial: ",font=("Fixedsys",18),bg="#666666", fg="white")
-        self.tutorial_label.pack(side=LEFT,fill=X,padx=10)
         
-        self.tutorial_button = Button(self.frame06, text="Begin tutorial", font=("Fixedsys",18),
-                                      command=lambda: Tutorial_Window(self.parent,self.main_frame))
-        self.tutorial_button.pack(side=LEFT,fill=X,padx=10)
-        
-
     def cheat_menu(self, state):
         if state.get() == 1:
             cheat_menu.Cheat_Menu()
@@ -412,7 +411,7 @@ class Tutorial_Window(Window):
                               command=lambda: Game_Overlay(),state=DISABLED)
         self.stats.pack(fill=X,padx=5,pady=5)
 
-        self.main_menu_button = Button(self.round_data, text="Option Menu", font=("Fixedsys",14),
+        self.main_menu_button = Button(self.round_data, text="Main Menu", font=("Fixedsys",14),
                               command=lambda: self.main_menu())
         self.main_menu_button.pack(fill=X,padx=5,pady=5)
 

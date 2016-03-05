@@ -896,7 +896,7 @@ class Thread_Tasks(threading.Thread):
         self.queue = queue_data
         
 ###################################################################################################################################
-class Game_Overlay:
+class Game_Overlay(Game_Window):
     '''Inherits the attributes and method of "Window".'''
     __instance = 0
 
@@ -905,6 +905,13 @@ class Game_Overlay:
         
         wave_data = open("./modules/wave_settings.pixel","r")
         wave_info = []
+
+        #####Access to constants
+        initial_data = Game_Constants()
+        self.health = initial_data.health
+        self.money = initial_data.money
+        self.wave = initial_data.speed
+        ####End
 
         for line in wave_data:
             wave_info.append(line)

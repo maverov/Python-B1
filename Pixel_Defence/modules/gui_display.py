@@ -88,8 +88,8 @@ class Main(Window): # Inherits class Window.
 
         #Revert constant back
         constant_data = open("./modules/constants.pixel","w")
+        constant_data.write("50\n")
         constant_data.write("100\n")
-        constant_data.write("1000\n")
         constant_data.write("0.03")
         #End
 

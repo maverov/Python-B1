@@ -89,7 +89,8 @@ class Main(Window): # Inherits class Window.
         #Revert constant back
         constant_data = open("./modules/constants.pixel","w")
         constant_data.write("50\n")
-        constant_data.write("100")
+        constant_data.write("100\n")
+        constant_data.write("0.03")
         #End
 
     def game_credits(self):
@@ -290,8 +291,7 @@ class Game_Constants():
 
          self.health = int(constant_info[0]) # Health
          self.money = int(constant_info[1]) #Money
-        
-         self.speed = float(0.03) #Play speed
+         self.speed = float(constant_info[2]) #Play speed
 ####################################################################################################################################
 class Tutorial_Window(Window):
     def __init__(self,parent,main):

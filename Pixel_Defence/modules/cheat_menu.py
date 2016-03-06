@@ -60,7 +60,7 @@ class Cheat_Menu:
             self.speed_hack = Label(self.frame03, text="Speed Hack: ",font=("Fixedsys",16))
             self.speed_hack.pack(side=LEFT, fill=X,expand=True,padx=10)
 
-            self.speed_scale = Scale(self.frame03,from_=0.01,to=1.00,orient=HORIZONTAL)
+            self.speed_scale = Scale(self.frame03,from_=1.00,to=0.01,orient=HORIZONTAL)
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
             self.speed_scale.set(0.03)
 
@@ -77,7 +77,7 @@ class Cheat_Menu:
             self.instant_toggle_button.pack(side=LEFT, fill=X,expand=True,padx=10)
 
 
-            self.cheat_instant_win = Label(self.frame05, text="Instant Win",font=("Fixedsys",16))
+            self.cheat_instant_win = Label(self.frame05, text="Instant Win:",font=("Fixedsys",16))
             self.cheat_instant_win.pack(side=LEFT, fill=X,expand=True,padx=10)
             
             self.win = Button(self.frame05, text="Activate", command=lambda: self.instant_win())

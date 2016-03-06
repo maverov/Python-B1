@@ -3,11 +3,12 @@
 from tkinter import *
 from tkinter.ttk import *
 import pygame
+import sqlite3
 
 #from modules import gui_display
 
 class Cheat_Menu:
-
+    
     __instance = 0
     
     def __init__(self):
@@ -25,7 +26,7 @@ class Cheat_Menu:
             self.overlay = Toplevel()
             self.overlay.title("Cheat Menu")
             self.overlay.resizable(0,0)
-            self.overlay.geometry("350x190")
+            self.overlay.geometry("350x240")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
@@ -44,6 +45,9 @@ class Cheat_Menu:
 
             self.frame05 = Frame(self.overlay)
             self.frame05.pack(fill=BOTH, pady=5)
+
+            self.frame06 = Frame(self.overlay)
+            self.frame06.pack(fill=BOTH, pady=5)
 
             self.cheats = Label(self.frame01, text="Cheat Menu!",font=("Fixedsys",18))
             self.cheats.pack(side=LEFT, fill=X,expand=True,padx=10)
@@ -67,7 +71,7 @@ class Cheat_Menu:
             self.speed_set = Button(self.frame03, text="Set", command=lambda: self.set_speed())
             self.speed_set.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
 
-            self.cheat_instant = Label(self.frame04, text="Unlock All Towers:",font=("Fixedsys",16))
+            self.cheat_instant = Label(self.frame04, text="Unlock All Towers:         ",font=("Fixedsys",16))
             self.cheat_instant.pack(side=LEFT, fill=X,expand=True,padx=10)
 
             var2 = BooleanVar()
@@ -77,11 +81,17 @@ class Cheat_Menu:
             self.instant_toggle_button.pack(side=LEFT, fill=X,expand=True,padx=10)
 
 
-            self.cheat_instant_win = Label(self.frame05, text="Instant Win:",font=("Fixedsys",16))
-            self.cheat_instant_win.pack(side=LEFT, fill=X,expand=True,padx=10)
+            self.cheat_low_health = Label(self.frame05, text="Enimies have low health:",font=("Fixedsys",16))
+            self.cheat_low_health.pack(side=LEFT, fill=X,expand=True,padx=10)
             
-            self.win = Button(self.frame05, text="Activate", command=lambda: self.instant_win())
-            self.win.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+            self.low = Button(self.frame05, text="Activate", command=lambda: self.low_health())
+            self.low.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+
+            self.cheat_overpower = Label(self.frame06, text="Over powered turrets:",font=("Fixedsys",16))
+            self.cheat_overpower.pack(side=LEFT, fill=X,expand=True,padx=10)
+            
+            self.power = Button(self.frame06, text="Activate", command=lambda: self.over_power())
+            self.power.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
 
     def unlimited_toggle(self, state):
         if state.get() == 1:
@@ -120,13 +130,22 @@ class Cheat_Menu:
             self.instant_toggle_button.config(text="Cheat ON")
             message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
             self.instant_toggle_button.state(["disabled"])
+            print("Need to implement")
             #print("ON")
         else:
             pass
             #print("OFF")
 
-    def instant_win(self, event=None):
-        print("Activated")
+    def low_health(self, event=None):
+        ''' Connect to database, modify values on the mobs making
+        thier health very low'''
+        message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
+        print("Need to implement")
+
+    def over_power(self, event=None):
+        '''Connect to database and edit value in turret for power'''
+        message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
+        print("Need to implement")
 
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)

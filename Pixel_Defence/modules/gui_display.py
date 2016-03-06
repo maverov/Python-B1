@@ -783,8 +783,8 @@ class Game_Window(Window): # Inherits class Window.
         try:
             self.error_label.pack_forget()
             self.last_button = ID
-            print(self.tower_list[self.last_button]+" tower placed on: ")
-            print(self.game_grid.last_barricade)
+            #print(self.tower_list[self.last_button]+" tower placed on: ")
+            #print(self.game_grid.last_barricade)
             if self.money-self.tower_cost_list[self.last_button] >= 0:
                 self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[self.game_grid.last_barricade]
                                                ,fill=self.tower_list[self.last_button])
@@ -792,7 +792,7 @@ class Game_Window(Window): # Inherits class Window.
                 self.money_label.config(text="Money: "+str(self.money))
                 self.money_label.pack(fill=X)
         except:
-            self.error_label = Label(self.game_canvas,text="Please select a location to place a tower first",font=("Fixedsys",15), bg="white",fg="red")
+            self.error_label = Label(self.game_canvas,text="Please select a location to place a tower first",font=("Fixedsys",16), bg="white",fg="red")
             self.error_label.pack()
             
     def bubble(self, canvas, sort_grid):
@@ -832,7 +832,7 @@ class Game_Window(Window): # Inherits class Window.
         self.move_mobs_stop.set()
         data = [self.parent.winfo_x(),self.parent.winfo_y()]
         
-        wave_info = [self.wave,self.health,self.money]
+        wave_info = [(self.wave - 1),self.health,self.money]
         wave_data = open("./modules/wave_settings.pixel","a")
         wave_data.write(str(wave_info)+"\n")
 
@@ -926,7 +926,7 @@ class Game_Overlay(Game_Window):
         initial_data = Game_Constants()
         self.health = initial_data.health
         self.money = initial_data.money
-        self.wave = initial_data.speed
+        self.speed = initial_data.speed
         ####End
 
         for line in wave_data:

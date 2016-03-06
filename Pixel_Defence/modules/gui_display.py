@@ -5,6 +5,7 @@ __version__ = "0.1"
 from tkinter.ttk import *
 from tkinter import *
 
+import time
 from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
@@ -773,6 +774,8 @@ class Game_Window(Window): # Inherits class Window.
                                  command=lambda: self.set_ID(5))
         self.barricade6.pack(side=RIGHT,padx=15,pady=3)
 
+        self.start = time.time()
+
     def set_ID(self, ID):
         self.last_button = ID
         print(self.tower_list[self.last_button]+" tower placed on: ")
@@ -835,7 +838,13 @@ class Game_Window(Window): # Inherits class Window.
         self.game_canvas.delete(ALL)
         self.game_canvas.create_text(300,300,text="GAME OVER",fill="white",font=("Fixedsys",30))
         self.game_canvas.update()
-        time.sleep(3)
+        
+        end = time.time()
+        time_spent = "You survived: " + str(round(end - self.start, 1)) + " seconds!"
+        self.time_label = Label(self.game_canvas,text=time_spent,font=("Fixedsys",18))
+        self.time_label.pack()
+        
+        time.sleep(5)
         self.main_menu()
 
     def main_menu(self, event=None):

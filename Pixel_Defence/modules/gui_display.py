@@ -847,7 +847,7 @@ class Game_Window(Window): # Inherits class Window.
         self.game_canvas.update()
         
         end = time.time()
-        time_spent = "You survived: " + str(round(end - self.start, 1)) + " seconds!"
+        time_spent = "You survived: " + str(round(end - self.start, 1)) + " seconds! " + str(self.wave) + " waves."
         self.time_label = Label(self.game_canvas,text=time_spent,font=("Fixedsys",18))
         self.time_label.pack()
         

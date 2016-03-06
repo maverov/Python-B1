@@ -745,9 +745,9 @@ class Game_Window(Window): # Inherits class Window.
                                   command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
         self.bubble_sort.pack(fill=X,padx=5,pady=5)
 
-        self.quick_sort = Button(self.sort_data_right, text="Quick Sort", font=("Fixedsys",14),
+        self.sort_options = Button(self.sort_data_right, text="Sort Options", font=("Fixedsys",14),
                                  command=lambda: self.s_options())
-        self.quick_sort.pack(fill=X, padx=5, pady=5)
+        self.sort_options.pack(fill=X, padx=5, pady=5)
 
         self.game_grid = grid.Grid(self.game_canvas,self.sort_canvas,self.current_settings[3],False)
 

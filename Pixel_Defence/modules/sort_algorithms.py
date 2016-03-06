@@ -94,7 +94,7 @@ class sort_options():
             self.speed = Label(self.frame02, text="Speed: ",font=("Fixedsys",17),bg="#666666",fg="white")
             self.speed.pack(side=LEFT,fill=X,padx=10)
 
-            self.speed_scale = Scale(self.frame02,from_=0,to=50,orient=HORIZONTAL,font=("Fixedsys",17),bg="#666666",fg="white")
+            self.speed_scale = Scale(self.frame02,from_=50,to=0,orient=HORIZONTAL,font=("Fixedsys",17),bg="#666666",fg="white")
             self.speed_scale.pack(side=LEFT,fill=X,expand=True,padx=10)
             self.speed_scale.set(25)
 
@@ -112,4 +112,3 @@ class sort_options():
         pygame.mixer.Sound.play(self.button_deny)
         sort_options.__instance -= 1 # Decrements private attribute __instance.
         self.overlay.destroy()
-    

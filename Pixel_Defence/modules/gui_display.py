@@ -5,7 +5,6 @@ __version__ = "0.1"
 from tkinter.ttk import *
 from tkinter import *
 
-import time
 from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
@@ -761,15 +760,19 @@ class Game_Window(Window): # Inherits class Window.
         self.turret2 = Button(self.tower_d1, text="T2\n"+str(self.tower_cost_list[1]), font=("Fixedsys",14),width=8,height=3,
                               command=lambda: self.set_ID(1))
         self.turret2.pack(side=RIGHT,padx=15,pady=3)
+        #self.turret2.config(state=DISABLED)
         self.turret3 = Button(self.tower_d2, text="T3\n"+str(self.tower_cost_list[2]), font=("Fixedsys",14),width=8,height=3,
                               command=lambda: self.set_ID(2))
         self.turret3.pack(side=LEFT,padx=15,pady=3)
+        #.turret3.config(state=DISABLED)
         self.turret4 = Button(self.tower_d2, text="T4\n"+str(self.tower_cost_list[3]), font=("Fixedsys",14),width=8,height=3,
                               command=lambda: self.set_ID(3))
         self.turret4.pack(side=RIGHT,padx=15,pady=3)
+        #self.turret4.config(state=DISABLED)
         self.turret5 = Button(self.tower_d3, text="T5\n"+str(self.tower_cost_list[4]), font=("Fixedsys",14),height=3,width=8,
                               command=lambda: self.set_ID(4))
         self.turret5.pack(side=LEFT,padx=15,pady=3)
+        #self.turret5.config(state=DISABLED)
         self.barricade6 = Button(self.tower_d3, text="Ba\n"+str(self.tower_cost_list[5]), font=("Fixedsys",14),height=3,width=8,
                                  command=lambda: self.set_ID(5))
         self.barricade6.pack(side=RIGHT,padx=15,pady=3)
@@ -777,17 +780,21 @@ class Game_Window(Window): # Inherits class Window.
         self.start = time.time()
 
     def set_ID(self, ID):
-        self.last_button = ID
-        print(self.tower_list[self.last_button]+" tower placed on: ")
-        print(self.game_grid.last_barricade)
-        if self.money-self.tower_cost_list[self.last_button] >= 0:
-            self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[self.game_grid.last_barricade]
-                                           ,fill=self.tower_list[self.last_button])
-            self.money -= self.tower_cost_list[self.last_button]
-            self.money_label.config(text="Money: "+str(self.money))
-            self.money_label.pack(fill=X)
-        
-
+        try:
+            self.error_label.pack_forget()
+            self.last_button = ID
+            print(self.tower_list[self.last_button]+" tower placed on: ")
+            print(self.game_grid.last_barricade)
+            if self.money-self.tower_cost_list[self.last_button] >= 0:
+                self.game_grid.canvas01.itemconfig(self.game_grid.main_grid[self.game_grid.last_barricade]
+                                               ,fill=self.tower_list[self.last_button])
+                self.money -= self.tower_cost_list[self.last_button]
+                self.money_label.config(text="Money: "+str(self.money))
+                self.money_label.pack(fill=X)
+        except:
+            self.error_label = Label(self.game_canvas,text="Please select a location to place a tower first",font=("Fixedsys",15), bg="white",fg="red")
+            self.error_label.pack()
+            
     def bubble(self, canvas, sort_grid):
         sort_algorithms.BubbleSort(canvas,sort_grid)
 

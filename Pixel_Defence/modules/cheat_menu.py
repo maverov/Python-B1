@@ -13,9 +13,24 @@ class Cheat_Menu:
     
     def __init__(self):
 
+        self.con = sqlite3.connect("pixeldefence.db")
+        self.cur = self.con.cursor()
+
+        self.cur.execute("CREATE TABLE IF NOT EXISTS turrets(ID INTEGER, Name TEXT, Power INTEGER, Range REAL, FireRate REAL)")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS mobs(ID INTEGER, Name TEXT, Speed REAL, Health INTEGER)")
+
+        ##Revert changes
+
+        self.health_list = (100,)
+        self.cur.executemany("UPDATE mobs SET Health=?", ((100,) for value in self.health_list))
+        self.cur.executemany("UPDATE mobs SET Health=? WHERE ID =?", ((500, 4) for value in self.health_list))
+        self.power_list = (20,)
+        self.cur.executemany("UPDATE turrets SET Power=?", ((20,) for value in self.power_list))
+        self.con.commit()
         self.button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
         self.button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
-
+        ##END
+        
         #Layout & Window
         if Cheat_Menu.__instance > 0: # Prevents more than one overlay opening at anytime.
             pass
@@ -130,22 +145,29 @@ class Cheat_Menu:
             self.instant_toggle_button.config(text="Cheat ON")
             message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
             self.instant_toggle_button.state(["disabled"])
-            print("Need to implement")
+            #print("Need to implement")
             #print("ON")
         else:
             pass
             #print("OFF")
 
     def low_health(self, event=None):
-        ''' Connect to database, modify values on the mobs making
-        thier health very low'''
         message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
-        print("Need to implement")
+
+        self.health_list = (1,)
+        self.cur.executemany("UPDATE mobs SET Health=?", ((1,) for value in self.health_list))
+        self.con.commit()
+
+        #print("Need to implement")
 
     def over_power(self, event=None):
-        '''Connect to database and edit value in turret for power'''
         message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
-        print("Need to implement")
+
+        self.power_list = (100000,)
+        self.cur.executemany("UPDATE turrets SET Power=?", ((100000,) for value in self.power_list))
+        self.con.commit()
+
+        #print("Need to implement")
 
     def instance(self, event=None):
         pygame.mixer.Sound.play(self.button_deny)

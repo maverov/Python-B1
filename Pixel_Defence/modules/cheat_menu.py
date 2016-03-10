@@ -20,16 +20,18 @@ class Cheat_Menu:
         self.cur.execute("CREATE TABLE IF NOT EXISTS mobs(ID INTEGER, Name TEXT, Speed REAL, Health INTEGER)")
 
         ##Revert changes
-
         self.health_list = (100,)
         self.cur.executemany("UPDATE mobs SET Health=?", ((100,) for value in self.health_list))
         self.cur.executemany("UPDATE mobs SET Health=? WHERE ID =?", ((500, 4) for value in self.health_list))
         self.power_list = (20,)
         self.cur.executemany("UPDATE turrets SET Power=?", ((20,) for value in self.power_list))
+        self.range_list = (10,)
+        self.cur.executemany("UPDATE turrets SET Range=?", ((10,) for value in self.range_list))
         self.con.commit()
+        ##END
+        
         self.button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
         self.button_deny = pygame.mixer.Sound("./audio/bgs/menu_deny_1_dry.wav")
-        ##END
         
         #Layout & Window
         if Cheat_Menu.__instance > 0: # Prevents more than one overlay opening at anytime.
@@ -41,7 +43,7 @@ class Cheat_Menu:
             self.overlay = Toplevel()
             self.overlay.title("Cheat Menu")
             self.overlay.resizable(0,0)
-            self.overlay.geometry("350x240")
+            self.overlay.geometry("350x280")
             self.overlay.wm_iconbitmap("./images/logo.ico")
             self.overlay.protocol("WM_DELETE_WINDOW",self.instance) # Sets event to when window is being closed.
 
@@ -63,6 +65,9 @@ class Cheat_Menu:
 
             self.frame06 = Frame(self.overlay)
             self.frame06.pack(fill=BOTH, pady=5)
+
+            self.frame07 = Frame(self.overlay)
+            self.frame07.pack(fill=BOTH, pady=5)
 
             self.cheats = Label(self.frame01, text="Cheat Menu!",font=("Fixedsys",18))
             self.cheats.pack(side=LEFT, fill=X,expand=True,padx=10)
@@ -106,6 +111,12 @@ class Cheat_Menu:
             self.cheat_overpower.pack(side=LEFT, fill=X,expand=True,padx=10)
             
             self.power = Button(self.frame06, text="Activate", command=lambda: self.over_power())
+            self.power.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
+
+            self.cheat_range = Label(self.frame07, text="Massivley ranged turrets:",font=("Fixedsys",16))
+            self.cheat_range.pack(side=LEFT, fill=X,expand=True,padx=10)
+            
+            self.power = Button(self.frame07, text="Activate", command=lambda: self.over_ranged())
             self.power.pack(side=LEFT,fill=X,expand=True,padx=5,pady=5)
 
     def unlimited_toggle(self, state):
@@ -157,16 +168,22 @@ class Cheat_Menu:
         self.health_list = (1,)
         self.cur.executemany("UPDATE mobs SET Health=?", ((1,) for value in self.health_list))
         self.con.commit()
-
         #print("Need to implement")
 
     def over_power(self, event=None):
         message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
 
-        self.power_list = (100000,)
-        self.cur.executemany("UPDATE turrets SET Power=?", ((100000,) for value in self.power_list))
+        self.power_list = (999,)
+        self.cur.executemany("UPDATE turrets SET Power=?", ((999,) for value in self.power_list))
         self.con.commit()
+        #print("Need to implement")
 
+    def over_ranged(self, event=None):
+        message = messagebox.showinfo("Activated", "Cheat Activated, If You Are Currently in Game, Main Menu to Apply Cheat")
+
+        self.power_list = (999,)
+        self.cur.executemany("UPDATE turrets SET Range=?", ((999,) for value in self.power_list))
+        self.con.commit()
         #print("Need to implement")
 
     def instance(self, event=None):
@@ -175,3 +192,4 @@ class Cheat_Menu:
         self.overlay.destroy()
         
 ###################################################################################################################################
+

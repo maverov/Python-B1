@@ -9,7 +9,7 @@ from PIL import Image, ImageTk, ImageGrab
 
 from modules import image_loader,grid,sort_algorithms,search_algorithms,entities, cheat_menu
 
-import os,sys,time,pickle,pygame,queue,threading
+import os,sys,time,pickle,pygame,queue,threading,pymsgbox
 
 pygame.init()
 button_accept = pygame.mixer.Sound("./audio/bgs/menu_confirm_1_dry.wav")
@@ -840,6 +840,27 @@ class Game_Window(Window): # Inherits class Window.
         self.round_button.config(text="Start Wave "+str(self.wave))
         self.round_button.config(state=NORMAL)
         self.round_button.update()
+        ######## Pop-up ########################################
+        hp=wave_info[1]
+        rou=wave_info[0]
+        mon=wave_info[2]
+        print(hp)
+        print(rou)
+        print(mon)
+        if hp== 30:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        elif rou== 3:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        elif rou== 5:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        elif rou== 10:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        elif mon== 200:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        elif mon== 500:
+            return pymsgbox.alert("Congratulations , you've unlocked an Achievement!",'Unlocked')
+        else:
+            return 0
 
     def gameover(self):
         self.move_mobs_stop.set()
@@ -1049,7 +1070,7 @@ class Game_Overlay(Game_Window):
             wave_info.append(line)
         a= wave_info[int(int(len(wave_info))-1)]
         b= int(a[1])
-        if b >=5:
+        if b >=10:
             return "The way to the Master!"
         else:
             return "Locked:Get to round 10"

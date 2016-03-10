@@ -962,7 +962,7 @@ class Game_Overlay(Game_Window):
 
             self.table.tag_configure("ttk")
             
-            self.table.pack(fill=BOTH,expand=True) # Force to fill space.
+            self.table.pack(side=BOTTOM,fill=BOTH,expand=True) # Force to fill space.
 
             Style().configure("Treeview",font=("Fixedsys",14)) # Styles the overview treeview table.
             Style().configure("Treeview.Heading",font=("Fixedsys",18))
@@ -976,6 +976,114 @@ class Game_Overlay(Game_Window):
                 i = i.split(",")
                 self.table.insert("", -1, values=(i[0],i[2],i[1]))
             ##End
+################ Achievements System ######################################################
+    ## Button for Achievements
+            self.ac_frame = Frame(self.overlay) # Creates frame for button Achievements
+            self.ac_frame.pack(side=TOP)
+
+            self.ac_button = Button(self.ac_frame,text="Achievements",font=("Fixedsys",18),command= lambda: self.Achievements())
+            self.ac_button.pack()
+
+    ## Achievements
+    def rounds(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[1])
+        if b >=3:
+            return "Unlocked Novice Level!"
+        else:
+            return "Locked:Get to round 3"
+        
+    def HP(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[4:6])
+        if b <=20:
+            return "Closer to the death!"
+        else:
+            return "Locked:Limits of survival: Have low Health"
+        
+    def Money500(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[7:11])
+        if b >= 500:
+            return "Leprechaun Chest!"
+        else:
+            return "Locked:Gain 500 Money"
+    def Money200(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[7:11])
+        if b >= 200:
+            return "Profit! You've doubled your Money!"
+        else:
+            return "Locked:Gain 200 Money"
+    def rounds01(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[1])
+        if b >=5:
+            return "Unlocked Apprendice Level!"
+        else:
+            return "Locked:Get to round 5"
+    def rounds02(self):
+        wave_data = open("./modules/wave_settings.pixel","r")
+        wave_info = []
+        for line in wave_data:
+            wave_info.append(line)
+        a= wave_info[int(int(len(wave_info))-1)]
+        b= int(a[1])
+        if b >=5:
+            return "The way to the Master!"
+        else:
+            return "Locked:Get to round 10"
+    
+    
+    def Achievements(self):
+        root = Tk()
+        root.geometry("400x300")
+
+        fram1 = Frame(root)
+        fram1.pack(fill=BOTH, expand=True)
+
+        lab0 = Label (fram1,text="Achievements",font=("Fixedsys",18))
+        lab0.pack(side=TOP)
+
+        lab1 = Label(fram1,text=self.rounds(),font=("Fixedsys",16))
+        lab1.pack(side=TOP)
+
+        lab10 = Label(fram1,text=self.rounds01(),font=("Fixedsys",16))
+        lab10.pack(side=TOP)
+        
+        lab12 = Label(fram1,text=self.rounds02(),font=("Fixedsys",16))
+        lab12.pack(side=TOP)
+
+        lab2 = Label(fram1,text=self.HP(),font=("Fixedsys",16))
+        lab2.pack(side=TOP)
+
+        lab3 = Label(fram1, text=self.Money500(),font=("Fixedsys",16))
+        lab3.pack(side=TOP)
+
+        lab30 = Label(fram1, text=self.Money200(),font=("Fixedsys",16))
+        lab30.pack(side=TOP)
+
+            
 
     def instance(self, event=None):
         pygame.mixer.Sound.play(button_deny)

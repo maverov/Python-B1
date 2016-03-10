@@ -426,7 +426,7 @@ class Tutorial_Window(Window):
                                   state=DISABLED,command=lambda: self.bubble(self.sort_canvas,self.game_grid.sort_grid))
         self.bubble_sort.pack(fill=X,padx=5,pady=5)
 
-        self.quick_sort = Button(self.sort_data_right, text="Quick Sort", font=("Fixedsys",14),
+        self.quick_sort = Button(self.sort_data_right, text="Sort Options", font=("Fixedsys",14),
                                  state=DISABLED,command=lambda: self.s_options())
         self.quick_sort.pack(fill=X, padx=5, pady=5)
 
@@ -488,7 +488,7 @@ class Tutorial_Window(Window):
             self.game_canvas.itemconfig(self.text4,text="Your stats will get recorded after each -->\nwave. You can visualise them here ")
             self.round_button.config(state=DISABLED,bg='#F0F0ED')
             self.bubble_sort.config(state=DISABLED,bg='#F0F0ED')
-            self.quick_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.quick_sort.config(bg='#F0F0ED')
             self.stats.config(state=NORMAL,bg='green')
             self.game_canvas.itemconfig(self.text5,text='')
         elif self.inst == 5:
@@ -496,17 +496,17 @@ class Tutorial_Window(Window):
             self.game_canvas.itemconfig(self.text4,text='')
             self.game_canvas.itemconfig(self.text6,text='')
             self.bubble_sort.config(state=NORMAL,bg='green')
-            self.quick_sort.config(state=NORMAL,bg='green')
+            self.quick_sort.config(bg='green')
             self.turret1.config(state=DISABLED,bg='#F0F0ED')
             self.turret2.config(bg='#F0F0ED')
             self.turret3.config(bg='#F0F0ED')
             self.turret4.config(bg='#F0F0ED')
             self.turret5.config(bg='#F0F0ED')
             self.barricade6.config(state=DISABLED,bg='#F0F0ED')
-            self.game_canvas.itemconfig(self.text5,text="When you kill monsters there are chances to drop  -->\ntower parts. These tower parts if\nsorted can unlock you a new tower to construct.\nYou have 2 sort modes - use whichever you want!")
+            self.game_canvas.itemconfig(self.text5,text="When you kill monsters there are chances to drop  -->\ntower parts. These tower parts if\nsorted can unlock you a new tower to construct.\nYou can edit the sort in terms of speed and orientation.\nSort options are available only in the main game.")
         elif self.inst == 6:
             self.bubble_sort.config(state=DISABLED,bg='#F0F0ED')
-            self.quick_sort.config(state=DISABLED,bg='#F0F0ED')
+            self.quick_sort.config(bg='#F0F0ED')
             self.game_canvas.itemconfig(self.text6,text='This is the building menu. In order to build\nsomething you have to select a tile then press\n the desired button. You can build barricades -->\nthat monsters will have to avoid.\nSelect a tile and build something.')
             self.game_canvas.itemconfig(self.text5,text='')
             self.turret1.config(state=NORMAL,bg='green')
@@ -527,7 +527,7 @@ class Tutorial_Window(Window):
             self.barricade6.config(state=DISABLED,bg='#F0F0ED')
             self.game_canvas.itemconfig(self.text6,text='')
             self.game_canvas.itemconfig(self.text7,text="You've finished\nthe tutorial!\nGood job!\nGL & HF")
-            self.game_canvas.itemconfig(self.text8,text="Press 'Option Menu' button to exit the tutorial.")
+            self.game_canvas.itemconfig(self.text8,text="Press 'Main Menu' button to exit the tutorial.")
             self.main_menu_button.config(bg='green')
             
 
@@ -822,11 +822,12 @@ class Game_Window(Window): # Inherits class Window.
 
         self.queue = queue.Queue()
         Thread_Tasks(self.queue).start()
-
+        
         self.parent.after(100,self.queue_processes)
 
+
         self.wave += 1
-        self.wave_end()
+        self.wave_end()        
 
     def wave_end(self):
         self.move_mobs_stop.set()

@@ -9,7 +9,8 @@ from tkinter.filedialog import askdirectory
 from tkinter.messagebox import showinfo,showwarning
 
 # -- PIL Module used for image manipulation -- #
-from PIL import Image, ImageGrab
+
+from PIL import Image, ImageGrab, ImageFilter
 
 # -- Custom Module files from generate_defaults.py and -- #
 # -- video_capture.py -- #
@@ -17,8 +18,16 @@ from generate_defaults import *
 from video_capture import *
 
 # -- Import base modules: os, sys and uuid (for unique id's) -- #
-import os, sys, uuid
+import os, sys, pickle, uuid
 
+class KeyBindings:
+
+    def __init__(self):
+        self.bindings = ["<F1>","<F1>","<F2>","<F3>","<F4>","<F5>","<F6>","<F7>",
+                         "<F8>","<F9>","<F10>","<F11>","<F12>"]
+        self.image_binding = self.settings[3]
+        self.video_binding = self.settings[6]
+        
 class Main:
     '''Class to define the main tkinter window.'''
 
@@ -31,7 +40,7 @@ previously used.
         self.root = parent # Takes passed through parent and globalises within class.
         self.root.title("Minority Screen Capture") # Defines the systems title.
         self.root.geometry("%dx%d" % (500,300)) # Sets the initial size of the window.
-        self.root.minsize(width=400,height=250) # Sets minimum window size.
+        self.root.minsize(width=400,height=150) # Sets minimum window size.
         self.root.maxsize(width=500,height=300) # Sets maximum window size.
         self.root.attributes("-topmost",1) # Forces window to be above over active windows.
         self.root.wm_iconbitmap("./icon.ico") # Sets the icon of this program as the one at the defined location.
@@ -45,7 +54,7 @@ previously used.
         self.notebook.add(self.page3, text="About")
         self.notebook.pack(fill=BOTH, expand=True) # Places the notebook into the defined frame.
 
-        self.style = Style() # Creates a custom style all the widgets follow.
+        self.style = ttk.Style() # Creates a custom style all the widgets follow.
         self.style.configure(".",font=("Fixedsys",16)) # Forces all the widgets to have Fixedsys as it's font.
 
         file = open("settings.txt","r") # Open settings.txt to be read.
@@ -63,7 +72,7 @@ previously used.
         Video(self.page2,settings,self.root)
         About(self.page3) # Call class that only passes the page.
 
-class Image:
+class Image(KeyBindings):
 
     def __init__(self, page, settings, parent):
         '''
@@ -76,8 +85,7 @@ that would be used within methods created by the call of this class.
         self.filters = ["None","None","BLUR","CONTOUR","DETAIL","EDGE_ENHANCE",
                         "EDGE_ENHANCE_MORE","EMBOSS","FIND_EDGES",
                         "SMOOTH","SMOOTH_MORE","SHARPEN"]
-        self.bindings = ["<F1>","<F1>","<F2>","<F3>","<F4>","<F5>","<F6>","<F7>",
-                         "<F8>","<F9>","<F10>","<F11>","<F12>"]
+        KeyBindings.__init__(self)
         
         self.frame_01 = Frame(self.page)
         self.frame_01.pack(fill=BOTH)
@@ -153,33 +161,41 @@ that would be used within methods created by the call of this class.
 Captures the image based of the user defined settings, and adjusts the outputed image
 as a result of this manipulation.
 '''
-        image = ImageGrab.grab() # Takes a screenshot of the screen using the pillow module.
-        if self.filter.get() != None:
-            pass
-        else:
-            # -- IF statements to determine correct opperation to act as the filter. -- #
-            if self.filter.get() == "BLUR":
-                image = image.filter(ImageFilter.BLUR)
-            elif self.filter.get() == "CONTOUR":
-                image = image.filter(ImageFilter.CONTOUR)
-            elif self.filter.get() == "DETAIL":
-                image = image.filter(ImageFilter.DETAIL)
-            elif self.filter.get() == "EDGE_ENHANCE":
-                image = image.filter(ImageFilter.EDGE_ENHANCE)
-            elif self.filter.get() == "EMBOSS":
-                image = image.filter(ImageFilter.EMBOSS)
-            elif self.filter.get() == "FIND_EDGES":
-                image = image.filter(ImageFilter.FIND_EDGES)
-            elif self.filter.get() == "SMOOTH":
-                image = image.filter(ImageFilter.SMOOTH)
-            elif self.filter.get() == "SMOOTH_MORE":
-                image = image.filter(ImageFilter.SMOOTH_MORE)
-            elif self.filter.get() == "SHARPEN":
-                image = image.filter(ImageFilter.SHARPEN)
+        # Takes a screenshot of the screen using the pillow module.
         try:
             file_name = uuid.uuid4() # Create a unique code value to use as the file name.
+            if self.screen.get() == False:
+                image = ImageGrab.grab()
+            else:
+                file = open("dimensions.pixel","rb")
+                data = pickle.load(file)
+                image = ImageGrab.grab(bbox=(data[0],data[1],data[0]+900,data[1]+600))
+                
+            if self.filter.get() == None:
+                pass
+            else:
+                # -- IF statements to determine correct opperation to act as the filter. -- #
+                if self.filter.get() == "BLUR":
+                    image = image.filter(ImageFilter.BLUR)
+                elif self.filter.get() == "CONTOUR":
+                    image = image.filter(ImageFilter.CONTOUR)
+                elif self.filter.get() == "DETAIL":
+                    image = image.filter(ImageFilter.DETAIL)
+                elif self.filter.get() == "EDGE_ENHANCE":
+                    image = image.filter(ImageFilter.EDGE_ENHANCE)
+                elif self.filter.get() == "EMBOSS":
+                    image = image.filter(ImageFilter.EMBOSS)
+                elif self.filter.get() == "FIND_EDGES":
+                    image = image.filter(ImageFilter.FIND_EDGES)
+                elif self.filter.get() == "SMOOTH":
+                    image = image.filter(ImageFilter.SMOOTH)
+                elif self.filter.get() == "SMOOTH_MORE":
+                    image = image.filter(ImageFilter.SMOOTH_MORE)
+                elif self.filter.get() == "SHARPEN":
+                    image = image.filter(ImageFilter.SHARPEN)
+
             image.save(self.location.get()+"/"+str(file_name)+".jpg","JPEG") # Save generated image.
-            showinfo("Image","Screenshot has been captured") # Display messagebox informing user it has been saved.
+            showinfo("Image","Screenshot has been captured") # Display messagebox informing user it has been saved.                
         except:
             showwarning("Image","Problem whilst taking screenshot.")# Display message warning user of problem.
         
@@ -198,7 +214,8 @@ Saves settings that have been updated on the image page to the settings.txt so t
 boot ready for the users next use of the program.
 '''
         new_settings = [self.location.get(), self.filter.get(), self.screen.get(), self.binding.get()] # Stores new setting values within an array.
-
+        print(self.video_binding)
+        
         # -- Find Old Settings -- #
         file = open("settings.txt","r") # Open settings file in read-mode.
         doc = file.readlines() # Read all lines in the file and store in array at doc.
@@ -228,7 +245,7 @@ Closes the program.
 '''
         sys.exit()
 
-class Video:
+class Video(KeyBindings):
 
     def __init__(self, page, settings, parent):
         '''
@@ -238,8 +255,8 @@ that would be used within methods created by the call of this class.
         self.page = page
         self.settings = settings
         self.parent = parent
-        self.bindings = ["<F1>","<F1>","<F2>","<F3>","<F4>","<F5>","<F6>","<F7>",
-                         "<F8>","<F9>","<F10>","<F11>","<F12>"]
+        KeyBindings.__init__(self)
+        
 
         self.frame_01 = Frame(self.page)
         self.frame_01.pack(fill=BOTH)
@@ -284,22 +301,22 @@ that would be used within methods created by the call of this class.
         self.screen.set(settings[5])
 
         # -- Frame 03 Widgets -- #
-        self.label03 = Label(self.frame_03,text="KEY TO CAPTURE: ")
-        self.label03.pack(side=LEFT,fill=X,expand=True)
-
-        self.binding_selection = OptionMenu(self.frame_03,self.binding,*self.bindings)
-        self.binding_selection.pack(side=LEFT,fill=X,expand=True)
-        
-        self.binding.set(self.settings[6])
-
-        # -- Frame 04 Widgets -- #
-        self.label_04 = Label(self.frame_04,text="MONTAGE MODE: ")
+        self.label_04 = Label(self.frame_03,text="MONTAGE MODE: ")
         self.label_04.pack(side=LEFT,fill=X,expand=True)
 
-        self.checkbutton_02 = Checkbutton(self.frame_04, variable=self.montage)
+        self.checkbutton_02 = Checkbutton(self.frame_03, variable=self.montage)
         self.checkbutton_02.pack(side=LEFT,fill=X,expand=True)
 
         self.screen.set(settings[7])
+
+        # -- Frame 04 Widgets -- #
+        self.label03 = Label(self.frame_04,text="KEY TO CAPTURE: ")
+        self.label03.pack(side=LEFT,fill=X,expand=True)
+
+        self.binding_selection = OptionMenu(self.frame_04,self.binding,*self.bindings)
+        self.binding_selection.pack(side=LEFT,fill=X,expand=True)
+        
+        self.binding.set(self.settings[6])
 
         # -- Frame 05 Widgets -- #
         self.button_03 = Button(self.frame_05,text="SUBMIT",command=lambda: self.submit())
@@ -314,10 +331,7 @@ that would be used within methods created by the call of this class.
         '''
 Runs the video capture threaded module and traps any acceptions.
 '''
-        try:
-            Video_Capture(self) # Calls Video_Capture Class and runs containing program.
-        except:
-            showwarning("Video","Issue when creating video.") # Runs this if error occurs during video capture.
+        Video_Capture(self) # Calls Video_Capture Class and runs containing program.
     
     def select_location(self):
         '''
@@ -326,7 +340,7 @@ Opens up an askdirectory window to retrieve user desired save location for video
         location = askdirectory(initialdir=self.location.get()) # Store location of searched file.
         if location == "": # Resets to default if no directory is selected.
             location = "./videos"
-        self.location.set(location) 
+        self.location.set(location)
 
     def submit(self):
         '''
@@ -334,26 +348,28 @@ Saves settings that have been updated on the video page to the settings.txt so t
 boot ready for the users next use of the program.
 '''
         new_settings = [self.location.get(), self.screen.get(), self.binding.get()]
+        if self.binding.get() == self.image_binding:
+            showwarning("Binding Clash","Key to bind is the same as Video,\ntry another binding.")
+        else:
+            file = open("settings.txt","r")
+            doc = file.readlines()
+            file.close()
 
-        file = open("settings.txt","r")
-        doc = file.readlines()
-        file.close()
+            with open("temp_settings.txt","w") as file:
+                for i in range(4):
+                    file.write(doc[i])
+                file.write("VIDEO_SAVE_LOCATION="+self.location.get()+"\n")
+                file.write("CAPTURE_AUDIO="+str(self.screen.get())+"\n")
+                file.write("SET_IMAGE_BIND="+self.binding.get()+"\n")
+                file.write("MONTAGE_MODE="+str(self.montage.get())+"\n")
 
-        with open("temp_settings.txt","w") as file:
-            for i in range(4):
-                file.write(doc[i])
-            file.write("VIDEO_SAVE_LOCATION="+self.location.get()+"\n")
-            file.write("CAPTURE_AUDIO="+str(self.screen.get())+"\n")
-            file.write("SET_IMAGE_BIND="+self.binding.get()+"\n")
-            file.write("MONTAGE_MODE="+str(self.montage.get())+"\n")
+            os.remove("./settings.txt")
+            os.rename("./temp_settings.txt","./settings.txt")
 
-        os.remove("./settings.txt")
-        os.rename("./temp_settings.txt","./settings.txt")
-
-        showinfo("Updated","Settings have been updated.")
-        
-        self.parent.unbind(self.settings[6])
-        self.parent.bind(new_settings[2],self.capture)
+            showinfo("Updated","Settings have been updated.")
+            
+            self.parent.unbind(self.settings[6])
+            self.parent.bind(new_settings[2],self.capture)
     
     def close(self):
         '''

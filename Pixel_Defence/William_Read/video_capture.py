@@ -17,22 +17,38 @@ class Video_Capture:
 
     def __init__(self, data):
         '''Captures visuals from Desktop screen using the FFMPEG API'''
+        self.audio_capture = data.screen
+        
         if data.montage.get() == False:
             self.frame_rate = 10
         else:
             self.frame_rate = 60
             
-        out_file = data.location.get()+"/"+str(uuid.uuid4())+".avi" # Creates the name and location the result video is stored.
+        out_video_file = data.location.get()+"/"+str(uuid.uuid4())+".avi" # Creates the name and location the result video is stored.
+        out_audio_file = data.location.get()+"/"+str(uuid.uuid4())+".wav" # Creates the name and location of the audio output.
+        
         ffmpeg_location = "./ffmpeg/bin/ffmpeg.exe" # Sets the location of the ffmpeg.exe file.
-        command_string = (ffmpeg_location, "-y",
+        
+        command_video_string = (ffmpeg_location, "-y",
                           "-r", "%d" % self.frame_rate,
                           "-f", "image2pipe",
                           "-vcodec", "mjpeg",
                           "-i", "pipe:",
                           "-vcodec", "libxvid",
-                          out_file) # Stores the command that will be run through CMD to boot.
+                          out_video_file) # Stores the command that will be run through CMD to boot.
 
-        self.process = subprocess.Popen(command_string,stdin=subprocess.PIPE,shell=False) # Runs the command_string that has been defined.
+        command_audio_string = (ffmpeg_location, "-f", "dshow",
+                                "-i",'audio="Stereo Mix"',
+                                out_audio_file)
+
+        self.video = subprocess.Popen(command_video_string,stdin=subprocess.PIPE,
+                                      stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                      shell=False) # Runs the command_string that has been defined.
+        
+        if self.audio_capture == True:
+            self.audio = subprocess.Popen(command_audio_string,stdin=subprocess.PIPE,
+                                      stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                      shell=False)
 
         # -- Sets up the Toplevel window which allows the user to record.
         self.toplevel = Toplevel()
@@ -42,13 +58,12 @@ class Video_Capture:
 
         # -- Defines initial constants. -- #
         self.record = False
-        self.time = "0"
         
         self.record_stop_button = Button(self.toplevel,text="Record",
                                     command=lambda: self.film_screen())
         self.record_stop_button.pack(side=LEFT)
 
-        self.timer = Label(self.toplevel,text="Time Elapsed: "+self.time)
+        self.timer = Label(self.toplevel,text="Time Elapsed: 0:00:00")
         self.timer.pack(side=LEFT)
 
         self.toplevel.mainloop()
@@ -74,11 +89,15 @@ as update the button to show the user that that the system is being recorded.
             
             self.queue = queue.Queue() # Initialises active Queue.
             Thread_Tasks(self.queue).start() # Starts all the values within a queue in defined in the class Thread_Tasks
-            self.toplevel.after(100,self.queue_processing) # Checks the queue processing every 100ms
+            self.toplevel.after(10,self.queue_processing) # Checks the queue processing every 100ms
         else:
             self.record_thread_stop.set() # Stops record_thread.
             self.timer_thread_stop.set() # Stops timer_thread.
-            self.process.stdin.close() # Closes the process input PIPE that has been opened.
+            self.video.stdin.close() # Closes the process input PIPE that has been opened.
+            
+            if self.audio_capture == True:
+                self.audio.stdin.close()# Closes the process input PIPE that has been opened.  
+            
             self.toplevel.destroy() # Destroys the Toplevel Window.
             showinfo("Video","Video has successfully captured.") # Display info window to let user know video has been saved.
 
@@ -86,7 +105,7 @@ as update the button to show the user that that the system is being recorded.
         try:
             pass # Events relative to key presses on the GUI placed in here.
         except queue.Empty:
-            self.toplevel.after(100,self.queue_processing) # Prevents hang when Queue is empty.
+            self.toplevel.after(10,self.queue_processing) # Prevents hang when Queue is empty.
     
     def capture_screen(self):
         '''
@@ -96,8 +115,11 @@ be stored as a new frame in the process.
         while self.record: # While the user hasn't stopped the recording.
             try:
                 image = ImageGrab.grab() # Take the image.
-                data = image.tostring("jpeg","RGB") # Convert the frame from a jpeg to a string using "RGB" values.
-                self.process.stdin.write(data) # Returns process standard input and writes out the value.
+                video_data = image.tostring("jpeg","RGB") # Convert the frame from a jpeg to a string using "RGB" values.
+                self.video.stdin.write(video_data) # Returns process standard input and writes out the value.
+                if self.audio_capture == True:
+                    audio_data = audio_array.astype("int16")
+                    self.audio_string.stdin.write(audio_data)
             except:
                 pass # Skips a frame if there is an issue with the conversion.
 
@@ -106,13 +128,28 @@ be stored as a new frame in the process.
 Performs a counter which increases by one after each second, allowing the user to know how long the video being
 stored currently is.
 '''
-        counter = 0 # Initialise the counter as 0.
+        self.secs = 0
+        self.mins = 0
+        self.hours = 0
+        
         while self.record: # While the user hasn't stopped recording.
-            self.time = str(counter) # Sets the value of the timer as a string.
-            self.timer.config(text="Time Elapsed: "+self.time) # Update value of the label.
+            if self.secs == 60:
+                self.secs = 0
+                self.mins += 1
+                if self.mins == 60:
+                    self.mins = 0
+                    self.hours += 1
+            if self.mins < 10:
+                if self.secs < 10:
+                    self.timer.config(text="Time Elapsed: "+str(self.hours)+":0"+str(self.mins)+":0"+str(self.secs))
+                else:
+                    self.timer.config(text="Time Elapsed: "+str(self.hours)+":0"+str(self.mins)+":"+str(self.secs))                
+            else:
+                self.timer.config(text="Time Elapsed: "+str(self.hours)+":"+str(self.mins)+":"+str(self.secs)) # Update value of the label.
             self.timer.update_idletasks()
+            
             time.sleep(1) # Pauses the program for 1 second.
-            counter += 1 # Increase counter by 1.
+            self.secs += 1
 
 class Thread_Tasks(threading.Thread):
     '''Inherit all attributes from the class Thread from module threading.'''

@@ -1,4 +1,4 @@
-__author__ = '''William Read, Thomas Starling, Hristiyan Stoyanov,
+__author__ = '''William Read, Thomas Starling, Hristiyan Maverov,
 Christian Ghita, Catalin-Andrei Cojocariu'''
 __version__ = "0.1"
 
